@@ -6,12 +6,13 @@ export default class HeaderMainPresenter {
   tripFilterComponent = new FilterView();
   tripInfoComponent = new TripInfoView();
 
-  constructor ({tripFilterContainer}) {
+  constructor ({tripInfoContainer, tripFilterContainer}) {
+    this.tripInfoContainer = tripInfoContainer;
     this.tripFilterContainer = tripFilterContainer;
   }
 
   init() {
-    render(this.tripInfoComponent, this.tripFilterContainer, 'afterbegin');
-    render(this.tripFilterComponent, this.tripFilterContainer, 'beforeend');
+    render(this.tripInfoComponent, this.tripInfoContainer, 'afterbegin');
+    render(this.tripFilterComponent, this.tripFilterContainer, 'afterbegin');
   }
 }
