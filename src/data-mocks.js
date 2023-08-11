@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { getRandomArrayElement, generateID, getRandomInteger, formatDate } from './utiles';
-import { POINT_TYPES, OFFER_TITLES, CITY_DESCRIPTIONS } from './const,js';
+import { POINT_TYPES, OFFER_TITLES, CITY_DESCRIPTIONS } from './const.js';
 
 const OFFERS = Object.keys(OFFER_TITLES).reduce((acc, type) => {
   acc[type] = OFFER_TITLES[type].map((title) => ({
@@ -11,10 +11,13 @@ const OFFERS = Object.keys(OFFER_TITLES).reduce((acc, type) => {
   return acc;
 }, {});
 
-const generatePictures = () => ({
-  src: `https://loremflickr.com/248/152?random=${getRandomInteger(1, 1000)}`,
-  description: getRandomArrayElement(['nature', 'city', 'sea', 'mountaines'])
-});
+const generatePictures = () => {
+  const picturesCount = getRandomInteger(1, 5);
+  return new Array(picturesCount).fill().map(() => ({
+    src: `https://loremflickr.com/248/152?random=${getRandomInteger(1, 1000)}`,
+    description: getRandomArrayElement(['nature', 'city', 'sea', 'mountaines'])
+  }));
+};
 
 
 const generateDestination = () => {
@@ -30,7 +33,7 @@ const generateDestination = () => {
 const generatePoint = () => {
   const type = getRandomArrayElement(POINT_TYPES);
   const dateFrom = dayjs().add(getRandomInteger(1, 10), 'day');
-  const dateTo = dayjs(dateFrom).add(getRandomInteger(1, 10), 'day');
+  const dateTo = dateFrom.add(getRandomInteger(1, 10), 'day');
   return {
     id: generateID(),
     basePrice: getRandomInteger(500, 2000),
