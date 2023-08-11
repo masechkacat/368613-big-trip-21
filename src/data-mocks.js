@@ -1,35 +1,15 @@
 import dayjs from 'dayjs';
-import { getRandomArrayElement, generateID, getRandomInteger } from './utiles';
+import { getRandomArrayElement, generateID, getRandomInteger, formatDate } from './utiles';
+import { POINT_TYPES, OFFER_TITLES, CITY_DESCRIPTIONS } from './const,js';
 
-
-// Генерация данных
-const CITY_DESCRIPTIONS = {
-  'Paris': 'Paris, known for its romantic ambiance, and its status as the world\'s fashion capital.',
-  'London': 'London, a historic city blending modernity and traditions.',
-  'New York': 'New York, the city that never sleeps and an epicenter of arts.',
-  'Tokyo': 'Tokyo, a bustling hub of innovation and ancient traditions.',
-  'Chamonix': 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.'
-};
-
-const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight'];
-
-const OFFERS = {
-  'taxi': [
-    { id: generateID(), title: 'Upgrade to a business class', price: 120 },
-    { id: generateID(), title: 'Choose the radio station', price: 60 },
-    { id: generateID(), title: 'Drive quickly, I am in a hurry', price: 100 }
-  ],
-  'flight': [
-    {id: generateID(), title: 'Choose a sit', price: 50},
-    {id: generateID(), title: 'Add extra baggage', price: 70},
-    {id: generateID(), title: 'Switch to business class', price: 200}
-  ],
-  'train': [
-    {id: generateID(), title: 'First class seat', price: 80},
-    {id: generateID(), title: 'Add a meal', price: 20},
-    {id: generateID(), title: 'WiFi access', price: 5}
-  ]
-};
+const OFFERS = Object.keys(OFFER_TITLES).reduce((acc, type) => {
+  acc[type] = OFFER_TITLES[type].map((title) => ({
+    id: generateID(),
+    title,
+    price: getRandomInteger(5, 250)
+  }));
+  return acc;
+}, {});
 
 const generatePictures = () => ({
   src: `https://loremflickr.com/248/152?random=${getRandomInteger(1, 1000)}`,
@@ -49,11 +29,13 @@ const generateDestination = () => {
 
 const generatePoint = () => {
   const type = getRandomArrayElement(POINT_TYPES);
+  const dateFrom = dayjs().add(getRandomInteger(1, 10), 'day');
+  const dateTo = dayjs(dateFrom).add(getRandomInteger(1, 10), 'day');
   return {
     id: generateID(),
     basePrice: getRandomInteger(500, 2000),
-    dateFrom: dayjs().add(getRandomInteger(1, 10), 'day').toISOString(),
-    dateTo: dayjs().add(getRandomInteger(11, 20), 'day').toISOString(),
+    dateFrom: formatDate(dateFrom),
+    dateTo: formatDate(dateTo),
     destination: generateDestination().id,
     isFavorite: Boolean(getRandomInteger(0, 1)),
     offers: OFFERS[type].map((offer) => offer.id),
