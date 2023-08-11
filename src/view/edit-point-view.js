@@ -199,7 +199,7 @@ function createEditPointTemplate() {
   );
 }
 
-export default class EDitPointView {
+export default class EditPointView {
   getTemplate() {
     return createEditPointTemplate();
   }
