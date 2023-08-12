@@ -15,6 +15,27 @@ export default class TripEventsPresenter {
   }
 
   init() {
+    this.tripEventsPoints = this.pointsModel.getPoints().map((point) => ({
+      ...point,
+      offers: this.pointsModel.getOffersForPoint(point),
+      destination: this.pointsModel.getDestinationForPoint(point)
+    }));
+
+    render(this.tripSortComponent, this.tripEventsContainer);
+    render(this.tripEventsComponent, this.tripEventsContainer);
+    render(new EditPointView(), this.tripEventsComponent.getElement());
+
+    this.renderPoints(this.tripEventsPoints);
+    render(new NewPointView(), this.tripEventsComponent.getElement());
+  }
+
+  renderPoints(points) {
+    points.forEach((point) => {
+      render(new PointView({ point }), this.tripEventsComponent.getElement());
+    });
+  }
+}
+/*init() {
     this.tripEventsPoints = [...this.pointsModel.getPoints()];
 
     render(this.tripSortComponent, this.tripEventsContainer);
@@ -27,4 +48,4 @@ export default class TripEventsPresenter {
 
     render(new NewPointView(), this.tripEventsComponent.getElement());
   }
-}
+}*/

@@ -1,4 +1,4 @@
-import { pointsMock } from '../data-mocks.js';
+import { pointsMock, destinationsMock, offersMock } from '../data-mocks.js';
 
 const POINT_COUNT = 3;
 
@@ -7,5 +7,14 @@ export default class PointsModel {
 
   getPoints() {
     return this.points;
+  }
+
+  getOffersForPoint(point) {
+    const relevantOffers = offersMock.find((offer) => offer.type === point.type);
+    return relevantOffers ? relevantOffers.offers : [];
+  }
+
+  getDestinationForPoint(point) {
+    return destinationsMock.find((destination) => destination.name === point.destination);
   }
 }
