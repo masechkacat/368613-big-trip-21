@@ -35,17 +35,3 @@ export default class TripEventsPresenter {
     });
   }
 }
-/*init() {
-    this.tripEventsPoints = [...this.pointsModel.getPoints()];
-
-    render(this.tripSortComponent, this.tripEventsContainer);
-    render(this.tripEventsComponent, this.tripEventsContainer);
-    render(new EditPointView(),this.tripEventsComponent.getElement());
-
-    for (let i = 0; i < this.tripEventsPoints.length; i++) {
-      render(new PointView({point: this.tripEventsPoints[i]}), this.tripEventsComponent.getElement());
-    }
-
-    render(new NewPointView(), this.tripEventsComponent.getElement());
-  }
-}*/
