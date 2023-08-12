@@ -1,6 +1,6 @@
 import FilterView from '../view/filter-view';
 import TripInfoView from '../view/trip-info-view';
-import { render } from '../render.js';
+import { render, RenderPosition } from '../render.js';
 
 export default class HeaderMainPresenter {
   tripFilterComponent = new FilterView();
@@ -12,7 +12,7 @@ export default class HeaderMainPresenter {
   }
 
   init() {
-    render(this.tripInfoComponent, this.tripInfoContainer, 'afterbegin');
-    render(this.tripFilterComponent, this.tripFilterContainer, 'afterbegin');
+    render(this.tripInfoComponent, this.tripInfoContainer, RenderPosition.AFTERBEGIN);
+    render(this.tripFilterComponent, this.tripFilterContainer, RenderPosition.AFTERBEGIN);
   }
 }

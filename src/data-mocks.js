@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomArrayElement, generateID, getRandomInteger, formatDate } from './utiles';
+import { getRandomArrayElement, generateID, getRandomInteger } from './utiles';
 import { POINT_TYPES, OFFER_TITLES, CITY_DESCRIPTIONS } from './const.js';
 
 const OFFERS = Object.keys(OFFER_TITLES).reduce((acc, type) => {
@@ -32,22 +32,22 @@ const generateDestination = () => {
 
 const generatePoint = () => {
   const type = getRandomArrayElement(POINT_TYPES);
-  const dateFrom = dayjs().add(getRandomInteger(1, 10), 'day');
-  const dateTo = dateFrom.add(getRandomInteger(1, 10), 'day');
   return {
     id: generateID(),
     basePrice: getRandomInteger(500, 2000),
-    dateFrom: formatDate(dateFrom),
-    dateTo: formatDate(dateTo),
-    destination: generateDestination().id,
+    dateFrom: dayjs().add(getRandomInteger(5, 290), 'minutes'),
+    dateTo: dayjs().add(getRandomInteger(300, 5900), 'minutes'),
+    destination: generateDestination().name,
     isFavorite: Boolean(getRandomInteger(0, 1)),
     offers: OFFERS[type].map((offer) => offer.id),
     type
   };
 };
 
-const points = new Array(10).fill().map(generatePoint);
-const destinations = new Array(10).fill().map(generateDestination);
-const offers = POINT_TYPES.map((type) => ({ type, offers: OFFERS[type] }));
+const pointsMock = new Array(10).fill().map(generatePoint);
+const destinationsMock = new Array(10).fill().map(generateDestination);
+const offersMock = POINT_TYPES.map((type) => ({ type, offers: OFFERS[type] }));
 
-export { points, destinations, offers };
+export {pointsMock, destinationsMock, offersMock};
+
+//export { generatePoint, generateDestination, OFFERS};
