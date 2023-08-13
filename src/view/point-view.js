@@ -64,12 +64,12 @@ function createPointTemplate(point) {
 }
 
 export default class PointView {
-  constructor({point}) {
-    this.point = point;
+  constructor({tripEventsPoints: point}) {
+    this.tripEventsPoints = point;
   }
 
   getTemplate() {
-    return createPointTemplate(this.point);
+    return createPointTemplate(this.tripEventsPoints);
   }
 
   getElement() {

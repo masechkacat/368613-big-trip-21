@@ -23,15 +23,18 @@ export default class TripEventsPresenter {
 
     render(this.tripSortComponent, this.tripEventsContainer);
     render(this.tripEventsComponent, this.tripEventsContainer);
-    render(new EditPointView(), this.tripEventsComponent.getElement());
+
+    // Передаем tripEventsPoints в EditPointView и NewPointView
+    render(new EditPointView({ tripEventsPoints: this.tripEventsPoints }), this.tripEventsComponent.getElement());
 
     this.renderPoints(this.tripEventsPoints);
-    render(new NewPointView(), this.tripEventsComponent.getElement());
+    render(new NewPointView({ tripEventsPoints: this.tripEventsPoints }), this.tripEventsComponent.getElement());
   }
 
   renderPoints(points) {
-    points.forEach((point) => {
-      render(new PointView({ point }), this.tripEventsComponent.getElement());
-    });
+    for (const point of points) {
+      const pointView = new PointView({ tripEventsPoints: point });
+      render(pointView, this.tripEventsComponent.getElement());
+    }
   }
 }
