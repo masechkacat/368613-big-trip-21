@@ -14,7 +14,7 @@ const OFFERS = Object.keys(OFFER_TITLES).reduce((acc, type) => {
 const generatePictures = () => {
   const picturesCount = getRandomInteger(1, 5);
   return new Array(picturesCount).fill().map(() => ({
-    src: `https://loremflickr.com/248/152?random=${getRandomInteger(1, 1000)}`,
+    src: `img/photos/${getRandomInteger(1, 5)}.jpg`,
     description: getRandomArrayElement(['nature', 'city', 'sea', 'mountaines'])
   }));
 };
