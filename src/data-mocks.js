@@ -41,7 +41,7 @@ const generatePoint = () => {
     dateTo: dayjs().add(getRandomInteger(300, 5900), 'minutes'),
     destination: getRandomArrayElement(destinationsMock).id,
     isFavorite: Boolean(getRandomInteger(0, 1)),
-    offers: OFFERS[type].map((offer) => offer.id).slice(0,getRandomInteger(1,3)),
+    offers: OFFERS[type].map((offer) => offer.id).slice(0,getRandomInteger(0,3)),
     type
   };
 };
