@@ -2,9 +2,9 @@ import {createElement} from '../render.js';
 import { formatDate, FormatsDate } from '../utiles.js';
 import { formatDuration } from '../utiles.js';
 
-function createPointTemplate(point) {
+function createPointTemplate(tripPoints) {
 
-  const {type, destination, basePrice, dateFrom, dateTo, isFavorite} = point;
+  const {type, destination, basePrice, dateFrom, dateTo, isFavorite} = tripPoints;
 
   const humanizedDateForPoint = formatDate(dateFrom, FormatsDate.MONTHDAY);
 
@@ -18,7 +18,7 @@ function createPointTemplate(point) {
     ? 'event__favorite-btn--active'
     : '';
 
-  const offersList = point.offers.map((offer) =>
+  const offersList = tripPoints.offers.map((offer) =>
     `<li class="event__offer">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -64,8 +64,8 @@ function createPointTemplate(point) {
 }
 
 export default class PointView {
-  constructor({tripEventsPoints: point}) {
-    this.tripEventsPoints = point;
+  constructor({tripEventsPoints: tripPoints}) {
+    this.tripEventsPoints = tripPoints;
   }
 
   getTemplate() {

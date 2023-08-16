@@ -30,6 +30,8 @@ const generateDestination = () => {
   };
 };
 
+const destinationsMock = new Array(10).fill().map(generateDestination);
+
 const generatePoint = () => {
   const type = getRandomArrayElement(POINT_TYPES);
   return {
@@ -37,15 +39,14 @@ const generatePoint = () => {
     basePrice: getRandomInteger(500, 2000),
     dateFrom: dayjs().add(getRandomInteger(5, 290), 'minutes'),
     dateTo: dayjs().add(getRandomInteger(300, 5900), 'minutes'),
-    destination: generateDestination().name,
+    destination: getRandomArrayElement(destinationsMock).id,
     isFavorite: Boolean(getRandomInteger(0, 1)),
-    offers: OFFERS[type].map((offer) => offer.id),
+    offers: OFFERS[type].map((offer) => offer.id).slice(0,getRandomInteger(1,3)),
     type
   };
 };
 
 const pointsMock = new Array(10).fill().map(generatePoint);
-const destinationsMock = new Array(10).fill().map(generateDestination);
 const offersMock = POINT_TYPES.map((type) => ({ type, offers: OFFERS[type] }));
 
 export {pointsMock, destinationsMock, offersMock};

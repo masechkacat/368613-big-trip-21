@@ -25,7 +25,10 @@ export default class TripEventsPresenter {
     render(this.tripEventsComponent, this.tripEventsContainer);
 
     // Передаем tripEventsPoints в EditPointView и NewPointView
-    render(new EditPointView({ tripEventsPoints: this.tripEventsPoints }), this.tripEventsComponent.getElement());
+    render(new EditPointView({ tripPoint: this.tripEventsPoints[0],
+      allOffers: this.pointsModel.getOffers(),
+      allDestinations: this.pointsModel.getDestinations()}),
+    this.tripEventsComponent.getElement());
 
     this.renderPoints(this.tripEventsPoints);
     render(new NewPointView({ tripEventsPoints: this.tripEventsPoints }), this.tripEventsComponent.getElement());

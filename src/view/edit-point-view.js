@@ -1,13 +1,23 @@
 import {createElement} from '../render.js';
 import { formatDate, FormatsDate } from '../utiles.js';
 
-function createEditPointTemplate(point) {
+const DEFAULT_POINT = {
+  basePrice: '',
+  dateFrom: '',
+  dateTo: '',
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  type: 'flight'
+};
 
-  const {destination, basePrice, dateFrom, dateTo, offers, type} = point[0];
+function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
 
+  const {destination, basePrice, dateFrom, dateTo, offers, type} = tripPoint;
 
-  const getOfferCheckboxes = () => offers.map((offer) => {
-    const checked = offers.includes(offer.id) ? 'checked' : '';
+  const currentTypeOffres = allOffers.find((offerOfType) => offerOfType.type === type)?.offers ?? DEFAULT_POINT.o;
+  const getOfferCheckboxes = () => currentTypeOffres.map((offer) => {
+    const checked = offers.includes(offer) ? 'checked' : '';
     return `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checked}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
@@ -18,27 +28,15 @@ function createEditPointTemplate(point) {
     </div>`;
   }).join('');
 
-  const uniqueEventType = new Set();
 
-  const uniqueDestinationNames = new Set();
+  const imagesDestination = destination.pictures.map((pictures) => `<img class="event__photo" src="${pictures.src}" alt="Event photo">`);
 
-  for (let i = 0; i < point.length; i++) {
-    const obj = point[i];
-    if (obj.type) {
-      uniqueEventType.add(`<div class="event__type-item">
-        <input id="event-type-${obj.type}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${obj.type}">
-        <label class="event__type-label event__type-label--${obj.type}" for="event-type-${obj.type}">${obj.type}</label>
-      </div>`);
-    }
-    if (obj.destination && obj.destination.name) { // && destination.name !== obj.destination.name
-      uniqueDestinationNames.add(`<option value="${obj.destination.name}"></option>`);
-    }
-  }
-  const eventTypeArray = Array.from(uniqueEventType).join('');
+  const eventTypesTemplate = allOffers.map((offer) => `<div class="event__type-item">
+  <input id="event-type-${offer.type}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${offer.type}">
+  <label class="event__type-label event__type-label--${offer.type}" for="event-type-${offer.type}">${offer.type}</label>
+</div>`).join('');
 
-  const destinationNameArray = Array.from(uniqueDestinationNames).join('');
-
-  const imagesDestination = destination.pictures.map((src) => `<img class="event__photo" src="${src}" alt="Event photo">`);
+  const destinationNamesTemplate = allDestinations.map((avialableDestination) => `<option value="${avialableDestination.name}"></option>`).join('');
 
   return (
     `<li class="trip-events__item">
@@ -54,7 +52,7 @@ function createEditPointTemplate(point) {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${eventTypeArray}
+              ${eventTypesTemplate}
             </fieldset>
           </div>
         </div>
@@ -65,7 +63,7 @@ function createEditPointTemplate(point) {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${destinationNameArray}
+            ${destinationNamesTemplate}
           </datalist>
         </div>
 
@@ -116,12 +114,14 @@ function createEditPointTemplate(point) {
 }
 
 export default class EditPointView {
-  constructor({tripEventsPoints}) {
-    this.tripEventsPoints = tripEventsPoints;
+  constructor({tripPoint, allOffers, allDestinations}) {
+    this.tripPoint = tripPoint;
+    this.allOffers = allOffers;
+    this.allDestinations = allDestinations;
   }
 
   getTemplate() {
-    return createEditPointTemplate(this.tripEventsPoints);
+    return createEditPointTemplate(this.tripPoint, this.allOffers, this.allDestinations);
   }
 
   getElement() {
