@@ -36,10 +36,9 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
     </div>`;
   }).join('');
 
-  // Проверки наличия предложений и отмеченных предложений
-  const hasOffersForType = currentTypeOffers.length > 0;
   const hasCheckedOffer = currentTypeOffers.some((offer) => offers.includes(offer));
-  const hideOffersSection = !hasOffersForType || !hasCheckedOffer;
+
+  const hideOffersSection = !hasCheckedOffer;
 
   const hideDesinationSection = !destination.id;
 
@@ -139,14 +138,14 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
 }
 
 export default class EditPointView {
-  constructor({tripPoint, allOffers, allDestinations}) {
+  constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations}) {
     this.tripPoint = tripPoint;
     this.allOffers = allOffers;
     this.allDestinations = allDestinations;
   }
 
   getTemplate() {
-    return createEditPointTemplate(this.tripPoint ?? DEFAULT_POINT, this.allOffers, this.allDestinations);
+    return createEditPointTemplate(this.tripPoint, this.allOffers, this.allDestinations);
   }
 
   getElement() {
