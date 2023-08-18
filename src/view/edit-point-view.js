@@ -17,7 +17,7 @@ const DEFAULT_POINT = {
 
 function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
 
-  const {destination, basePrice, dateFrom, dateTo, offers, type} = tripPoint;
+  const {destinationForPoint, basePrice, dateFrom, dateTo, checkedOffersForPoint, type} = tripPoint;
 
   const formattedDateFrom = typeof dateFrom === 'string' ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
   const formattedDateTo = typeof dateTo === 'string' ? '' : formatDate(dateTo, FormatsDate.DMYHM);
@@ -25,7 +25,7 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
   const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === type)?.offers ?? DEFAULT_POINT.offers;
 
   const getOfferCheckboxes = () => currentTypeOffers.map((offer) => {
-    const checked = offers.includes(offer) ? 'checked' : '';
+    const checked = checkedOffersForPoint.includes(offer) ? 'checked' : '';
     return `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checked}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
@@ -36,16 +36,16 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
     </div>`;
   }).join('');
 
-  const hasCheckedOffer = currentTypeOffers.some((offer) => offers.includes(offer));
+  const hasCheckedOffer = currentTypeOffers.some((offer) => checkedOffersForPoint.includes(offer));
 
   const hideOffersSection = !hasCheckedOffer;
 
-  const hideDesinationSection = !destination.id;
+  const hideDesinationSection = !destinationForPoint.id;
 
   const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
 
-  const imagesDestination = destination.id
-    ? destination.pictures.map((pictures) => `<img class="event__photo" src="${pictures.src}" alt="Event photo">`).join('')
+  const imagesDestination = destinationForPoint.id
+    ? destinationForPoint.pictures.map((pictures) => `<img class="event__photo" src="${pictures.src}" alt="Event photo">`).join('')
     : '';
 
   const eventTypesTemplate = allOffers.map((offer) => `<div class="event__type-item">
@@ -78,7 +78,7 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationForPoint.name}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationNamesTemplate}
           </datalist>
@@ -119,8 +119,8 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
         `}
         ${hideDesinationSection ? '' : `
         <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">${destination.name}</h3>
-          <p class="event__destination-description">${destination.description}</p>
+          <h3 class="event__section-title  event__section-title--destination">${destinationForPoint.name}</h3>
+          <p class="event__destination-description">${destinationForPoint.description}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">

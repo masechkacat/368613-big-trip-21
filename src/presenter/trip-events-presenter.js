@@ -17,8 +17,8 @@ export default class TripEventsPresenter {
   init() {
     this.tripEventsPoints = this.pointsModel.getPoints().map((point) => ({
       ...point,
-      offers: this.pointsModel.getOffersForPoint(point),
-      destination: this.pointsModel.getDestinationForPoint(point)
+      checkedOffersForPoint: this.pointsModel.getCheckedOffersForPoint(point),
+      destinationForPoint: this.pointsModel.getDestinationForPoint(point)
     }));
 
     render(this.tripSortComponent, this.tripEventsContainer);

@@ -21,7 +21,7 @@ export default class PointsModel {
     return this.destinations;
   }
 
-  getOffersForPoint(point) {
+  getCheckedOffersForPoint(point) {
     const pointTypeOffers = this.offers.find((offer) => offer.type === point.type);
     return pointTypeOffers ? pointTypeOffers.offers
       .filter((offer) => point.offers.includes(offer.id)) : [];
