@@ -1,6 +1,6 @@
-import {createElement} from '../render.js';
 import { formatDate, FormatsDate } from '../utiles.js';
 import { formatDuration } from '../utiles.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createPointTemplate(tripPoints) {
 
@@ -63,24 +63,15 @@ function createPointTemplate(tripPoints) {
   );
 }
 
-export default class PointView {
+export default class PointView extends AbstractView {
+  #tripEventsPoints = null;
+
   constructor({tripEventsPoints: tripPoints}) {
-    this.tripEventsPoints = tripPoints;
+    super();
+    this.#tripEventsPoints = tripPoints;
   }
 
-  getTemplate() {
-    return createPointTemplate(this.tripEventsPoints);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createPointTemplate(this.#tripEventsPoints);
   }
 }

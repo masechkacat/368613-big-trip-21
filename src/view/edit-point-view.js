@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
 import { formatDate, FormatsDate } from '../utiles.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const DEFAULT_POINT = {
   basePrice: 0,
@@ -137,26 +137,19 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
   );
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
+  #tripPoint = null;
+  #allOffers = null;
+  #allDestinations = null;
+
   constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations}) {
-    this.tripPoint = tripPoint;
-    this.allOffers = allOffers;
-    this.allDestinations = allDestinations;
+    super();
+    this.#tripPoint = tripPoint;
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
   }
 
-  getTemplate() {
-    return createEditPointTemplate(this.tripPoint, this.allOffers, this.allDestinations);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEditPointTemplate(this.#tripPoint, this.#allOffers, this.#allDestinations);
   }
 }
