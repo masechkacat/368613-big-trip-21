@@ -1,9 +1,8 @@
 import SortView from '../view/sort-view.js';
 import PointView from '../view/point-view.js';
-import NewPointView from '../view/new-point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import ListView from '../view/list-view.js';
-import { render } from '../framework/render.js';
+import { render,replace } from '../framework/render.js';
 
 export default class TripEventsPresenter {
   #tripEventsContainer = null;
@@ -12,7 +11,7 @@ export default class TripEventsPresenter {
   #tripSortComponent = new SortView();
   #tripEventsComponent = new ListView();
 
-  #tripEventsPoints = null;
+  #tripEventsPoints = [];
 
   constructor ({tripEventsContainer, pointsModel}) {
     this.#tripEventsContainer = tripEventsContainer;
@@ -25,20 +24,55 @@ export default class TripEventsPresenter {
     render(this.#tripSortComponent, this.#tripEventsContainer);
     render(this.#tripEventsComponent, this.#tripEventsContainer);
 
-    // Передаем tripEventsPoints в EditPointView и NewPointView
-    render(new EditPointView({ tripPoint: this.#tripEventsPoints[0],
-      allOffers: this.#pointsModel.offers,
-      allDestinations: this.#pointsModel.destinations}),
-    this.#tripEventsComponent.element);
-
-    this.renderPoints(this.#tripEventsPoints);
-    render(new NewPointView({ tripEventsPoints: this.#tripEventsPoints }), this.#tripEventsComponent.element);
+    this.#renderPoints(this.#tripEventsPoints);
   }
 
-  renderPoints(points) {
-    for (const point of points) {
-      const pointView = new PointView({ tripEventsPoints: point });
-      render(pointView, this.#tripEventsComponent.element);
+  #renderPoints() {
+    const tripPoints = this.#pointsModel.enrichedPoints;
+    tripPoints.forEach((point) => {
+      this.#renderPoint(point);
+    });
+  }
+
+  #renderPoint(point) {
+    const pointView = new PointView({
+      tripPoint: point,
+      onEditClick: () => {
+        replaceEditToPoint();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    const pointEditView = new EditPointView({
+      tripPoint: point,
+      allOffers: this.#pointsModel.offers,
+      allDestinations: this.#pointsModel.destinations,
+      onCloseEditFormButton: () =>{
+        replacePointToEdit();
+      },
+      onFormSubmit: () => {
+        replacePointToEdit();
+
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function escKeyDownHandler (evt) {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replacePointToEdit();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
     }
+
+    function replaceEditToPoint() {
+      replace(pointEditView, pointView);
+    }
+
+    function replacePointToEdit() {
+      replace(pointView, pointEditView);
+    }
+
+    render(pointView, this.#tripEventsComponent.element);
   }
 }

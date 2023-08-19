@@ -2,9 +2,9 @@ import { formatDate, FormatsDate } from '../utiles.js';
 import { formatDuration } from '../utiles.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createPointTemplate(tripPoints) {
+function createPointTemplate(tripPoint) {
 
-  const {type, destinationForPoint, basePrice, dateFrom, dateTo, isFavorite} = tripPoints;
+  const {type, destinationForPoint, basePrice, dateFrom, dateTo, isFavorite} = tripPoint;
 
   const humanizedDateForPoint = formatDate(dateFrom, FormatsDate.MONTHDAY);
 
@@ -18,7 +18,7 @@ function createPointTemplate(tripPoints) {
     ? 'event__favorite-btn--active'
     : '';
 
-  const checkedOffersList = tripPoints.checkedOffersForPoint.map((offer) =>
+  const checkedOffersList = tripPoint.checkedOffersForPoint.map((offer) =>
     `<li class="event__offer">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -64,14 +64,24 @@ function createPointTemplate(tripPoints) {
 }
 
 export default class PointView extends AbstractView {
-  #tripEventsPoints = null;
+  #tripPoint = null;
+  #handleEventClick = null;
 
-  constructor({tripEventsPoints: tripPoints}) {
+  constructor({tripPoint, onEditClick}) {
     super();
-    this.#tripEventsPoints = tripPoints;
+    this.#tripPoint = tripPoint;
+    this.#handleEventClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
-    return createPointTemplate(this.#tripEventsPoints);
+    return createPointTemplate(this.#tripPoint);
   }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEventClick();
+  };
 }
