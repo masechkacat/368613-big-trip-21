@@ -6,38 +6,39 @@ import ListView from '../view/list-view.js';
 import { render } from '../framework/render.js';
 
 export default class TripEventsPresenter {
-  tripSortComponent = new SortView();
-  tripEventsComponent = new ListView();
+  #tripEventsContainer = null;
+  #pointsModel = null;
+
+  #tripSortComponent = new SortView();
+  #tripEventsComponent = new ListView();
+
+  #tripEventsPoints = null;
 
   constructor ({tripEventsContainer, pointsModel}) {
-    this.tripEventsContainer = tripEventsContainer;
-    this.pointsModel = pointsModel;
+    this.#tripEventsContainer = tripEventsContainer;
+    this.#pointsModel = pointsModel;
   }
 
   init() {
-    this.tripEventsPoints = this.pointsModel.getPoints().map((point) => ({
-      ...point,
-      checkedOffersForPoint: this.pointsModel.getCheckedOffersForPoint(point),
-      destinationForPoint: this.pointsModel.getDestinationForPoint(point)
-    }));
+    this.#tripEventsPoints = this.#pointsModel.enrichedPoints;
 
-    render(this.tripSortComponent, this.tripEventsContainer);
-    render(this.tripEventsComponent, this.tripEventsContainer);
+    render(this.#tripSortComponent, this.#tripEventsContainer);
+    render(this.#tripEventsComponent, this.#tripEventsContainer);
 
     // Передаем tripEventsPoints в EditPointView и NewPointView
-    render(new EditPointView({ tripPoint: this.tripEventsPoints[0],
-      allOffers: this.pointsModel.getOffers(),
-      allDestinations: this.pointsModel.getDestinations()}),
-    this.tripEventsComponent.element);
+    render(new EditPointView({ tripPoint: this.#tripEventsPoints[0],
+      allOffers: this.#pointsModel.offers,
+      allDestinations: this.#pointsModel.destinations}),
+    this.#tripEventsComponent.element);
 
-    this.renderPoints(this.tripEventsPoints);
-    render(new NewPointView({ tripEventsPoints: this.tripEventsPoints }), this.tripEventsComponent.element);
+    this.renderPoints(this.#tripEventsPoints);
+    render(new NewPointView({ tripEventsPoints: this.#tripEventsPoints }), this.#tripEventsComponent.element);
   }
 
   renderPoints(points) {
     for (const point of points) {
       const pointView = new PointView({ tripEventsPoints: point });
-      render(pointView, this.tripEventsComponent.element);
+      render(pointView, this.#tripEventsComponent.element);
     }
   }
 }
