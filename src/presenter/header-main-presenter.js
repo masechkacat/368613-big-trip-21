@@ -3,12 +3,12 @@ import TripInfoView from '../view/trip-info-view';
 import { render, RenderPosition } from '../framework/render.js';
 
 export default class HeaderMainPresenter {
-  tripFilterComponent = new FilterView();
-  tripInfoComponent = new TripInfoView();
-
-  constructor ({tripInfoContainer, tripFilterContainer}) {
+  constructor ({tripInfoContainer, tripFilterContainer, filters}) {
     this.tripInfoContainer = tripInfoContainer;
     this.tripFilterContainer = tripFilterContainer;
+
+    this.tripFilterComponent = new FilterView({filters});
+    this.tripInfoComponent = new TripInfoView();
   }
 
   init() {
