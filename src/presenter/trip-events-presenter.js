@@ -1,9 +1,10 @@
 import SortView from '../view/sort-view.js';
-import PointView from '../view/point-view.js';
-import EditPointView from '../view/edit-point-view.js';
+//import PointView from '../view/point-view.js';
+//import EditPointView from '../view/edit-point-view.js';
 import ListView from '../view/list-view.js';
 import NoPointView from '../view/no-point-view.js';
-import { render, replace, RenderPosition } from '../framework/render.js';
+import { render, RenderPosition } from '../framework/render.js';
+import PointPresenter from './point-presenter.js';
 
 export default class TripEventsPresenter {
   #tripEventsContainer = null;
@@ -45,7 +46,14 @@ export default class TripEventsPresenter {
     });
   }
 
+
   #renderPoint(point) {
+    const pointPresenter = new PointPresenter(this.#tripEventsComponent, point, this.#pointsModel.offers, this.#pointsModel.destinations);
+    pointPresenter.init();
+    this.#tripEventsPoints.push(pointPresenter);
+  }
+
+  /* #renderPoint(point) {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
@@ -85,5 +93,5 @@ export default class TripEventsPresenter {
     }
 
     render(pointView, this.#tripEventsComponent.element);
-  }
+  }*/
 }
