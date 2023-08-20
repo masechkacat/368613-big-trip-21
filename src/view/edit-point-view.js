@@ -36,9 +36,9 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
     </div>`;
   }).join('');
 
-  const hasCheckedOffer = currentTypeOffers.some((offer) => checkedOffersForPoint.includes(offer));
+  const hasOffersForType = currentTypeOffers.length > 0;
 
-  const hideOffersSection = !hasCheckedOffer;
+  const hideOffersSection = !hasOffersForType;
 
   const hideDesinationSection = !destinationForPoint.id;
 

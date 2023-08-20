@@ -2,7 +2,8 @@ import SortView from '../view/sort-view.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import ListView from '../view/list-view.js';
-import { render,replace } from '../framework/render.js';
+import NoPointView from '../view/no-point-view.js';
+import { render, replace, RenderPosition } from '../framework/render.js';
 
 export default class TripEventsPresenter {
   #tripEventsContainer = null;
@@ -21,7 +22,17 @@ export default class TripEventsPresenter {
   init() {
     this.#tripEventsPoints = this.#pointsModel.enrichedPoints;
 
+    this.#renderTripEvents();
+  }
+
+  #renderTripEvents() {
+    if (!this.#tripEventsPoints.length) {
+      render(new NoPointView(), this.#tripEventsContainer, RenderPosition.BEFOREBEGIN);
+      return;
+    }
+
     render(this.#tripSortComponent, this.#tripEventsContainer);
+
     render(this.#tripEventsComponent, this.#tripEventsContainer);
 
     this.#renderPoints(this.#tripEventsPoints);
@@ -35,6 +46,14 @@ export default class TripEventsPresenter {
   }
 
   #renderPoint(point) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replacePointToEdit();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
     const pointView = new PointView({
       tripPoint: point,
       onEditClick: () => {
@@ -56,14 +75,6 @@ export default class TripEventsPresenter {
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     });
-
-    function escKeyDownHandler (evt) {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replacePointToEdit();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    }
 
     function replaceEditToPoint() {
       replace(pointEditView, pointView);
