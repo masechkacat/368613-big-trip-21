@@ -1,5 +1,5 @@
-import { formatDate, FormatsDate } from '../utiles.js';
-import { formatDuration } from '../utiles.js';
+import { formatDate, FormatsDate } from '../utils/utiles.js';
+import { formatDuration } from '../utils/utiles.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createPointTemplate(tripPoint) {
