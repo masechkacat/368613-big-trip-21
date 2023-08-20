@@ -1,6 +1,6 @@
 import FilterView from '../view/filter-view';
 import TripInfoView from '../view/trip-info-view';
-import { render, RenderPosition } from '../render.js';
+import { render, RenderPosition } from '../framework/render.js';
 
 export default class HeaderMainPresenter {
   tripFilterComponent = new FilterView();

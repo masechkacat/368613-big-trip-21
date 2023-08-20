@@ -1,10 +1,10 @@
-import {createElement} from '../render.js';
 import { formatDate, FormatsDate } from '../utiles.js';
 import { formatDuration } from '../utiles.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
-function createPointTemplate(tripPoints) {
+function createPointTemplate(tripPoint) {
 
-  const {type, destination, basePrice, dateFrom, dateTo, isFavorite} = tripPoints;
+  const {type, destinationForPoint, basePrice, dateFrom, dateTo, isFavorite} = tripPoint;
 
   const humanizedDateForPoint = formatDate(dateFrom, FormatsDate.MONTHDAY);
 
@@ -18,7 +18,7 @@ function createPointTemplate(tripPoints) {
     ? 'event__favorite-btn--active'
     : '';
 
-  const offersList = tripPoints.offers.map((offer) =>
+  const checkedOffersList = tripPoint.checkedOffersForPoint.map((offer) =>
     `<li class="event__offer">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -33,7 +33,7 @@ function createPointTemplate(tripPoints) {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destination.name}</h3>
+      <h3 class="event__title">${type} ${destinationForPoint.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="2019-03-18T10:30">${humanizedTimeFrom}</time>
@@ -47,7 +47,7 @@ function createPointTemplate(tripPoints) {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${offersList}
+        ${checkedOffersList}
       </ul>
       <button class="event__favorite-btn ${favoriteClassName}" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -63,24 +63,25 @@ function createPointTemplate(tripPoints) {
   );
 }
 
-export default class PointView {
-  constructor({tripEventsPoints: tripPoints}) {
-    this.tripEventsPoints = tripPoints;
+export default class PointView extends AbstractView {
+  #tripPoint = null;
+  #handleEventClick = null;
+
+  constructor({tripPoint, onEditClick}) {
+    super();
+    this.#tripPoint = tripPoint;
+    this.#handleEventClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    return createPointTemplate(this.tripEventsPoints);
+  get template() {
+    return createPointTemplate(this.#tripPoint);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEventClick();
+  };
 }
