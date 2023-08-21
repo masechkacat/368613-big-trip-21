@@ -23,7 +23,9 @@ export default class PointPresenter {
     this.#tripComponent = new PointView({
       tripPoint: this.#point,
       onEditClick: this.#handleEditClick,
+      //onFavoriteClick: this.#favoriteClickHandler,
     });
+
     this.#tripEditComponent = new EditPointView({
       tripPoint: this.#point,
       allOffers: this.#allOffers,
@@ -63,46 +65,16 @@ export default class PointPresenter {
   #handleCloseEditFormButton = () => {
     this.#replaceFormToCard();
   };
+
+  /*#favoriteClickHandler = () =>{
+    this.#point.isFavorite = !this.#point.isFavorite;
+
+    const updatedPointComponent = new PointView({
+      tripPoint: this.#point,
+      onEditClick: this.#handleEditClick,
+      onFavoriteClick: this.#favoriteClickHandler,
+    });
+
+    replace(updatedPointComponent, this.#tripComponent);
+  };*/
 }
-
-/*const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceEditToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const pointView = new PointView({
-      tripPoint: this.#point,
-      onEditClick: () => {
-        replaceEditToPoint();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    const pointEditView = new EditPointView({
-      tripPoint: this.#point,
-      allOffers: this.#offers,
-      allDestinations: this.#destinations,
-      onCloseEditFormButton: () =>{
-        replacePointToEdit();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onFormSubmit: () => {
-        replacePointToEdit();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    function replaceEditToPoint() {
-      replace(pointEditView, pointView);
-    }
-
-    function replacePointToEdit() {
-      replace(pointView, pointEditView);
-    }
-
-    render(pointView, this.#tripEventsComponent.element);
-  }
-}*/
