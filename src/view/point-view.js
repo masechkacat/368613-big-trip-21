@@ -77,7 +77,7 @@ export default class PointView extends AbstractView {
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
-    this.element.querySelector('.event')
+    this.element.querySelector('.event__favorite-btn')
       .addEventListener('click', this.#favoriteClickHandler);
   }
 
@@ -94,5 +94,10 @@ export default class PointView extends AbstractView {
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleFavoriteClick();
+  };
+
+  updateFavoriteStatus = (isFavorite) =>{
+    const favoriteButton = this.element.querySelector('.event__favorite-btn');
+    favoriteButton.classList.toggle('event__favorite-btn--active', isFavorite);
   };
 }

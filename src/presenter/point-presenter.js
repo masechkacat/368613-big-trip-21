@@ -23,7 +23,7 @@ export default class PointPresenter {
     this.#tripComponent = new PointView({
       tripPoint: this.#point,
       onEditClick: this.#handleEditClick,
-      //onFavoriteClick: this.#favoriteClickHandler,
+      onFavoriteClick: this.#favoriteClickHandler,
     });
 
     this.#tripEditComponent = new EditPointView({
@@ -66,15 +66,8 @@ export default class PointPresenter {
     this.#replaceFormToCard();
   };
 
-  /*#favoriteClickHandler = () =>{
+  #favoriteClickHandler = () =>{
     this.#point.isFavorite = !this.#point.isFavorite;
-
-    const updatedPointComponent = new PointView({
-      tripPoint: this.#point,
-      onEditClick: this.#handleEditClick,
-      onFavoriteClick: this.#favoriteClickHandler,
-    });
-
-    replace(updatedPointComponent, this.#tripComponent);
-  };*/
+    this.#tripComponent.updateFavoriteStatus(this.#point.isFavorite);
+  };
 }
