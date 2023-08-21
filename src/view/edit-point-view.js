@@ -1,17 +1,17 @@
-import { formatDate, FormatsDate } from '../utiles.js';
+import { formatDate, FormatsDate } from '../utils/utiles.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const DEFAULT_POINT = {
   basePrice: 0,
   dateFrom: '',
   dateTo: '',
-  destination: {
+  destinationForPoint: {
     description: '',
     name: '',
     pictures: []
   },
   isFavorite: false,
-  offers: [],
+  checkedOffersForPoint: [],
   type: 'flight'
 };
 
@@ -22,7 +22,9 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
   const formattedDateFrom = typeof dateFrom === 'string' ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
   const formattedDateTo = typeof dateTo === 'string' ? '' : formatDate(dateTo, FormatsDate.DMYHM);
 
-  const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === type)?.offers ?? DEFAULT_POINT.offers;
+  const currentType = (tripPoint === DEFAULT_POINT) ? DEFAULT_POINT.type : type;
+
+  const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
 
   const getOfferCheckboxes = () => currentTypeOffers.map((offer) => {
     const checked = checkedOffersForPoint.includes(offer) ? 'checked' : '';

@@ -1,11 +1,31 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
 
 const FormatsDate = {
   MONTHDAY: 'MMM DD',
   HOURMIN: 'HH:mm',
   DMYHM: 'DD/MM/YY HH:mm'
+};
+
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past'
+};
+
+const Filters = {
+  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => dayjs(point.dateFrom).isAfter(dayjs())),
+  [FilterType.PRESENT]: (points) => points.filter((point) => dayjs(point.dateFrom)
+    .isSameOrBefore(dayjs()) && dayjs(point.dateTo).isSameOrAfter(dayjs())),
+  [FilterType.PAST]: (points) => points.filter((point) => dayjs(point.dateTo).isBefore(dayjs()))
 };
 
 const getRandomInteger = (a = 0, b = 1) => {
@@ -31,4 +51,4 @@ function formatDuration(startDate, endDate) {
   return `${days}${hours}${minutes}`.trim();
 }
 
-export {getRandomInteger, getRandomArrayElement, generateID, formatDate, formatDuration, FormatsDate};
+export {getRandomInteger, getRandomArrayElement, generateID, formatDate, formatDuration, FormatsDate, Filters};

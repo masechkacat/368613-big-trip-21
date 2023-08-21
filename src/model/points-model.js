@@ -1,4 +1,4 @@
-import { pointsMock, destinationsMock, offersMock } from '../data-mocks.js';
+import { pointsMock, destinationsMock, offersMock } from '../mocks/data-mocks.js';
 
 const POINT_COUNT = 3;
 

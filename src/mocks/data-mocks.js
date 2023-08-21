@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomArrayElement, generateID, getRandomInteger } from './utiles';
+import { getRandomArrayElement, generateID, getRandomInteger } from '../utils/utiles';
 import { POINT_TYPES, OFFER_TITLES, CITY_DESCRIPTIONS } from './const.js';
 
 const OFFERS = Object.keys(OFFER_TITLES).reduce((acc, type) => {
