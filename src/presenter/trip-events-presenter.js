@@ -57,8 +57,7 @@ export default class TripEventsPresenter {
 
 
   #renderPoint(point) {
-    const pointPresenter = new PointPresenter(this.#tripEventsComponent, point, this.#pointsModel.offers, this.#pointsModel.destinations);
-    pointPresenter.init();
-    this.#tripEventsPoints.push(pointPresenter);
+    const pointPresenter = new PointPresenter({tripEventsContainer: this.#tripEventsComponent.element});
+    pointPresenter.init(point, this.#pointsModel.offers, this.#pointsModel.destinations);
   }
 }

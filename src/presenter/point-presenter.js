@@ -3,20 +3,69 @@ import EditPointView from '../view/edit-point-view.js';
 import { replace, render } from '../framework/render.js';
 
 export default class PointPresenter {
-  #tripEventsComponent = null;
+  #tripEventsContainer = null;
   #point = null;
-  #offers = null;
-  #destinations = null;
+  #allOffers = null;
+  #allDestinations = null;
 
-  constructor(tripEventsComponent, point, offers, destinations) {
-    this.#tripEventsComponent = tripEventsComponent;
-    this.#point = point;
-    this.#offers = offers;
-    this.#destinations = destinations;
+  #tripComponent = null;
+  #tripEditComponent = null;
+
+  constructor({tripEventsContainer}) {
+    this.#tripEventsContainer = tripEventsContainer;
   }
 
-  init() {
-    const escKeyDownHandler = (evt) => {
+  init(tripPoint, allOffers, allDestinations) {
+    this.#point = tripPoint;
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
+
+    this.#tripComponent = new PointView({
+      tripPoint: this.#point,
+      onEditClick: this.#handleEditClick,
+    });
+    this.#tripEditComponent = new EditPointView({
+      tripPoint: this.#point,
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations,
+      onFormSubmit: this.#handleFormSubmit,
+      onCloseEditFormButton: this.#handleCloseEditFormButton,
+    });
+
+    render(this.#tripComponent, this.#tripEventsContainer);
+  }
+
+  #replaceCardToForm() {
+    replace(this.#tripEditComponent, this.#tripComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  #replaceFormToCard() {
+    replace(this.#tripComponent, this.#tripEditComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#replaceFormToCard();
+    }
+  };
+
+  #handleEditClick = () => {
+    this.#replaceCardToForm();
+  };
+
+  #handleFormSubmit = () => {
+    this.#replaceFormToCard();
+  };
+
+  #handleCloseEditFormButton = () => {
+    this.#replaceFormToCard();
+  };
+}
+
+/*const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
         replaceEditToPoint();
@@ -56,4 +105,4 @@ export default class PointPresenter {
 
     render(pointView, this.#tripEventsComponent.element);
   }
-}
+}*/
