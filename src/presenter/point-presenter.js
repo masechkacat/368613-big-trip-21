@@ -1,59 +1,115 @@
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
-import { replace, render } from '../framework/render.js';
+import { replace, render,remove } from '../framework/render.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
 export default class PointPresenter {
-  #tripEventsComponent = null;
+  #pointListContainer = null;
   #point = null;
-  #offers = null;
-  #destinations = null;
+  #allOffers = null;
+  #allDestinations = null;
+  #mode = Mode.DEFAULT;
 
-  constructor(tripEventsComponent, point, offers, destinations) {
-    this.#tripEventsComponent = tripEventsComponent;
+  #handleDataChange = null;
+  #handleModeChange = null;
+
+  #pointComponent = null;
+  #pointEditComponent = null;
+
+  constructor({pointListContainer, allOffers, allDestinations, onDataChange, onModeChange}) {
+    this.#pointListContainer = pointListContainer;
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
+    this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
+  }
+
+  init(point) {
     this.#point = point;
-    this.#offers = offers;
-    this.#destinations = destinations;
-  }
 
-  init() {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceEditToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#pointEditComponent;
 
-    const pointView = new PointView({
+    this.#pointComponent = new PointView({
       tripPoint: this.#point,
-      onEditClick: () => {
-        replaceEditToPoint();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+      onEditClick: this.#handleEditClick,
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
-    const pointEditView = new EditPointView({
+    this.#pointEditComponent = new EditPointView({
       tripPoint: this.#point,
-      allOffers: this.#offers,
-      allDestinations: this.#destinations,
-      onCloseEditFormButton: () =>{
-        replacePointToEdit();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onFormSubmit: () => {
-        replacePointToEdit();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations,
+      onFormSubmit: this.#handleFormSubmit,
+      onCloseEditFormButton: this.#handleCloseEditFormButton,
     });
 
-    function replaceEditToPoint() {
-      replace(pointEditView, pointView);
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#pointComponent, this.#pointListContainer);
+      return;
     }
 
-    function replacePointToEdit() {
-      replace(pointView, pointEditView);
+    // Проверка на наличие в DOM необходима,
+    // чтобы не пытаться заменить то, что не было отрисовано
+    if (this.#mode === Mode.DEFAULT) {
+      replace(this.#pointComponent, prevPointComponent);
     }
 
-    render(pointView, this.#tripEventsComponent.element);
+    if (this.#mode === Mode.EDITING) {
+      replace(this.#pointEditComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
   }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
+  }
+
+  #replaceCardToForm() {
+    replace(this.#pointEditComponent, this.#pointComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
+  }
+
+  #replaceFormToCard() {
+    replace(this.#pointComponent, this.#pointEditComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
+  }
+
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#replaceFormToCard();
+    }
+  };
+
+  #handleEditClick = () => {
+    this.#replaceCardToForm();
+  };
+
+  #handleFormSubmit = () => {
+    this.#replaceFormToCard();
+  };
+
+  #handleCloseEditFormButton = () => {
+    this.#replaceFormToCard();
+  };
+
+  #handleFavoriteClick = () =>{
+    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+  };
 }
