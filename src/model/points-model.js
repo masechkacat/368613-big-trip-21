@@ -1,6 +1,5 @@
 import { pointsMock, destinationsMock, offersMock } from '../mocks/data-mocks.js';
 
-const POINT_COUNT = 3;
 
 export default class PointsModel {
   #points = null;
@@ -9,7 +8,7 @@ export default class PointsModel {
   #enrichedPoints = null;
 
   constructor() {
-    this.#points = pointsMock.slice(0, POINT_COUNT);//Array.from({length: POINT_COUNT}, generatePoint);
+    this.#points = pointsMock;
     this.#offers = offersMock;
     this.#destinations = destinationsMock;
   }

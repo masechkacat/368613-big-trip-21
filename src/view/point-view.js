@@ -96,8 +96,4 @@ export default class PointView extends AbstractView {
     this.#handleFavoriteClick();
   };
 
-  updateFavoriteStatus = (isFavorite) =>{
-    const favoriteButton = this.element.querySelector('.event__favorite-btn');
-    favoriteButton.classList.toggle('event__favorite-btn--active', isFavorite);
-  };
 }

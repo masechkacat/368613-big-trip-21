@@ -51,4 +51,8 @@ function formatDuration(startDate, endDate) {
   return `${days}${hours}${minutes}`.trim();
 }
 
-export {getRandomInteger, getRandomArrayElement, generateID, formatDate, formatDuration, FormatsDate, Filters};
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export {getRandomInteger, getRandomArrayElement, generateID, formatDate, formatDuration, updateItem, FormatsDate, Filters};

@@ -1,32 +1,37 @@
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
-import { replace, render } from '../framework/render.js';
+import { replace, render,remove } from '../framework/render.js';
 
 export default class PointPresenter {
-  #tripEventsContainer = null;
+  #pointListContainer = null;
   #point = null;
   #allOffers = null;
   #allDestinations = null;
+  #handleDataChange = null;
 
-  #tripComponent = null;
-  #tripEditComponent = null;
+  #pointComponent = null;
+  #pointEditComponent = null;
 
-  constructor({tripEventsContainer}) {
-    this.#tripEventsContainer = tripEventsContainer;
-  }
-
-  init(tripPoint, allOffers, allDestinations) {
-    this.#point = tripPoint;
+  constructor({pointListContainer, allOffers, allDestinations, onDataChange}) {
+    this.#pointListContainer = pointListContainer;
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
+    this.#handleDataChange = onDataChange;
+  }
 
-    this.#tripComponent = new PointView({
+  init(point) {
+    this.#point = point;
+
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#pointEditComponent;
+
+    this.#pointComponent = new PointView({
       tripPoint: this.#point,
       onEditClick: this.#handleEditClick,
-      onFavoriteClick: this.#favoriteClickHandler,
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
-    this.#tripEditComponent = new EditPointView({
+    this.#pointEditComponent = new EditPointView({
       tripPoint: this.#point,
       allOffers: this.#allOffers,
       allDestinations: this.#allDestinations,
@@ -34,16 +39,37 @@ export default class PointPresenter {
       onCloseEditFormButton: this.#handleCloseEditFormButton,
     });
 
-    render(this.#tripComponent, this.#tripEventsContainer);
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#pointComponent, this.#pointListContainer);
+      return;
+    }
+
+    // Проверка на наличие в DOM необходима,
+    // чтобы не пытаться заменить то, что не было отрисовано
+    if (this.#pointListContainer.contains(prevPointComponent.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#pointListContainer.contains(prevPointEditComponent.element)) {
+      replace(this.#pointEditComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
   }
 
   #replaceCardToForm() {
-    replace(this.#tripEditComponent, this.#tripComponent);
+    replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
   #replaceFormToCard() {
-    replace(this.#tripComponent, this.#tripEditComponent);
+    replace(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
@@ -66,8 +92,7 @@ export default class PointPresenter {
     this.#replaceFormToCard();
   };
 
-  #favoriteClickHandler = () =>{
-    this.#point.isFavorite = !this.#point.isFavorite;
-    this.#tripComponent.updateFavoriteStatus(this.#point.isFavorite);
+  #handleFavoriteClick = () =>{
+    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
   };
 }
