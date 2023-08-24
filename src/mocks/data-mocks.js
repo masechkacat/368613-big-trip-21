@@ -37,8 +37,8 @@ const generatePoint = () => {
   return {
     id: generateID(),
     basePrice: getRandomInteger(500, 2000),
-    dateFrom: dayjs().add(getRandomInteger(5, 290), 'minutes'),
-    dateTo: dayjs().add(getRandomInteger(300, 5900), 'minutes'),
+    dateFrom: dayjs().add(getRandomInteger(5, 15), 'day'),
+    dateTo: dayjs().add(getRandomInteger(16, 30), 'day'),
     destination: getRandomArrayElement(destinationsMock).id,
     isFavorite: Boolean(getRandomInteger(0, 1)),
     offers: OFFERS[type].map((offer) => offer.id).slice(0,getRandomInteger(0,3)),
