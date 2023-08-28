@@ -6,7 +6,6 @@ import PointPresenter from './point-presenter.js';
 import { generateFilter } from '../mocks/filters-generator.js';
 import HeaderMainPresenter from './header-main-presenter.js';
 import { updateItem } from '../utils/utiles.js';
-import TripEventsView from '../view/trip-events-view.js';
 import { sort } from '../utils/sort.js';
 import { SortType } from '../utils/utiles.js';
 
@@ -14,7 +13,6 @@ export default class TripEventsPresenter {
   #tripEventsContainer = null;
   #pointsModel = null;
 
-  #tripEventsComponent = new TripEventsView();
   #tripSortComponent = null;
   #tripListComponent = new ListView();
   #noPointComponent = new NoPointView();
@@ -54,6 +52,7 @@ export default class TripEventsPresenter {
 
   #handleSortTypeChange = (sortType) => {
     this.#sortPoints(sortType);
+
     this.#clearPointList();
     this.#renderSort(this.#tripEventsContainer);
     this.#renderPointsList();
@@ -70,6 +69,14 @@ export default class TripEventsPresenter {
     this.#pointPresenters.clear();
   }
 
+
+  #renderPoint(point) {
+    const pointPresenter = new PointPresenter({pointListContainer: this.#tripListComponent.element,
+      allOffers: this.#pointsModel.offers, allDestinations: this.#pointsModel.destinations,
+      onDataChange: this.#handlePointChange, onModeChange: this.#handleModeChange});
+    pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
+  }
 
   #renderSort() {
 
@@ -89,22 +96,13 @@ export default class TripEventsPresenter {
     render(this.#tripSortComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
   }
 
+
   #renderNoPoints() {
-    render(this.#noPointComponent, this.#tripEventsComponent.element, RenderPosition.AFTERBEGIN);
+    render(this.#noPointComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
   }
-
-  #renderPoint(point) {
-    const pointPresenter = new PointPresenter({pointListContainer: this.#tripListComponent.element,
-      allOffers: this.#pointsModel.offers, allDestinations: this.#pointsModel.destinations,
-      onDataChange: this.#handlePointChange, onModeChange: this.#handleModeChange});
-    pointPresenter.init(point);
-    this.#pointPresenters.set(point.id, pointPresenter);
-  }
-
 
   #renderPoints() {
-    const tripPoints = this.#pointsModel.enrichedPoints;
-    tripPoints.forEach((point) => {
+    this.#tripEventsPoints.forEach((point) => {
       this.#renderPoint(point);
     });
   }
@@ -117,7 +115,6 @@ export default class TripEventsPresenter {
   }
 
   #renderTripEvents() {
-    render(this.#tripEventsComponent, this.#tripEventsContainer);
 
     if (!this.#tripEventsPoints.length) {
       this.#renderNoPoints();

@@ -38,7 +38,7 @@ const Filters = {
 
 
 function getPointsByDate(pointA, pointB) {
-  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+  return dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
 }
 
 function getPointsByDuration(pointA, pointB) {
