@@ -7,6 +7,14 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
 
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFER: 'offer',
+};
+
 const FormatsDate = {
   MONTHDAY: 'MMM DD',
   HOURMIN: 'HH:mm',
@@ -27,6 +35,21 @@ const Filters = {
     .isSameOrBefore(dayjs()) && dayjs(point.dateTo).isSameOrAfter(dayjs())),
   [FilterType.PAST]: (points) => points.filter((point) => dayjs(point.dateTo).isBefore(dayjs()))
 };
+
+
+function getPointsByDate(pointA, pointB) {
+  return dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
+}
+
+function getPointsByDuration(pointA, pointB) {
+  const durationA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const durationB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+  return durationB - durationA;
+}
+
+function getEPointsByPrice(pointA, pointB) {
+  return pointB.basePrice - pointA.basePrice;
+}
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -55,4 +78,6 @@ function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
-export {getRandomInteger, getRandomArrayElement, generateID, formatDate, formatDuration, updateItem, FormatsDate, Filters};
+export {getRandomInteger, getRandomArrayElement, generateID, formatDate,
+  formatDuration, updateItem, getPointsByDate, getPointsByDuration, getEPointsByPrice,
+  SortType, FormatsDate, Filters};
