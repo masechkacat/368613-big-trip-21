@@ -1,5 +1,5 @@
 import { formatDate, FormatsDate } from '../utils/utiles.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const DEFAULT_POINT = {
   basePrice: 0,
@@ -15,9 +15,9 @@ const DEFAULT_POINT = {
   type: 'flight'
 };
 
-function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
-
-  const {destinationForPoint, basePrice, dateFrom, dateTo, checkedOffersForPoint, type} = tripPoint;
+function createEditPointTemplate({state, allOffers, allDestinations, destinationForPoint}) {
+  const {tripPoint} = state;
+  const {basePrice, dateFrom, dateTo, checkedOffersForPoint, type} = tripPoint;
 
   const formattedDateFrom = typeof dateFrom === 'string' ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
   const formattedDateTo = typeof dateTo === 'string' ? '' : formatDate(dateTo, FormatsDate.DMYHM);
@@ -139,8 +139,7 @@ function createEditPointTemplate(tripPoint, allOffers, allDestinations) {
   );
 }
 
-export default class EditPointView extends AbstractView {
-  #tripPoint = null;
+export default class EditPointView extends AbstractStatefulView {
   #allOffers = null;
   #allDestinations = null;
   #handleFormSubmit = null;
@@ -148,30 +147,111 @@ export default class EditPointView extends AbstractView {
 
   constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations, onFormSubmit, onCloseEditFormButton}) {
     super();
-    this.#tripPoint = tripPoint;
+    const { destinationForPoint } = tripPoint;
+    this.destinationForPoint = destinationForPoint;
+    this._setState(EditPointView.parsePointToState({tripPoint}));
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseEditFormButton = onCloseEditFormButton;
 
-    this.element.querySelector('form')
-      .addEventListener('submit', this.#formSubmitHandler);
-
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#closeEditFormButtonHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEditPointTemplate(this.#tripPoint, this.#allOffers, this.#allDestinations);
+    return createEditPointTemplate({state: this._state, allOffers: this.#allOffers, allDestinations: this.#allDestinations, destinationForPoint: this.destinationForPoint});
   }
+
+  reset = (tripPoint) => this.updateElement({tripPoint});
+
+  _restoreHandlers = () => {
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditFormButtonHandler);
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelectorAll('.event__type-input').forEach((element) => {
+      element.addEventListener('change', this.#typeInputClick);
+    });
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputChange);
+    console.log(this.element.querySelector('.event__input--destination'));
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);
+
+    const offerBlock = this.element.querySelector('.event__available-offers');
+
+    if(offerBlock){
+      offerBlock.addEventListener('change', this.#offerClickHanlder);
+    }
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#tripPoint);
+    this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
   #closeEditFormButtonHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseEditFormButton();
   };
+
+
+  #typeInputClick = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      tripPoint: {
+        ...this._state.tripPoint,
+        type: evt.target.value,
+        offers: []
+      }
+    });
+  };
+
+  #offerClickHanlder = (evt) => {
+    evt.preventDefault();
+
+    const checkedBoxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+
+    this._setState({
+      tripPoint: {
+        ...this._state.tripPoint,
+        offers: checkedBoxes.map((element) => element.dataset.offerId)
+      }
+    });
+  };
+
+  #priceInputChange = (evt) => {
+    evt.preventDefault();
+
+    this._setState({
+      tripPoint: {
+        ...this._state.tripPoint,
+        basePrice: evt.target.value
+      }
+    });
+  };
+
+  #destinationInputChange = (evt) => {
+    evt.preventDefault();
+
+    console.log("Input value:", evt.target.value);  // Добавлено для отладки
+  console.log("All Destinations:", this.#allDestinations);  // Добавлено для отладки
+
+    const selectedDestination = this.#allDestinations.find((destination) => destination.name === evt.target.value);
+    console.log(selectedDestination);
+
+    const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
+
+    this.updateElement({
+      tripPoint: {
+        ...this._state.tripPoint,
+        destination: selectedDestinationId
+      }
+    });
+  };
+
+  //static parsePointToState = ({tripPoint}) => ({tripPoint});
+  static parsePointToState = ({tripPoint}) => {
+    console.log("Parsing point to state:", tripPoint);
+    return {tripPoint};
+  };
+
+  static parseStateToPoint = (state) => state.tripPoint;
 }
