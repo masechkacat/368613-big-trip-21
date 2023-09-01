@@ -184,10 +184,10 @@ export default class EditPointView extends AbstractStatefulView {
       this.element.querySelector('#event-start-time-1'),
       {
         dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.tripPoint.dateFrom,
+        defaultDate: this._state.tripPoint.formattedDateFrom,
         onClose: this.#dateFromChangeHandler,
         enableTime: true,
-        maxDate: this._state.tripPoint.dateTo,
+        maxDate: this._state.tripPoint.formattedDateTo,
         locale: {
           firstDayOfWeek: 1
         },
@@ -198,10 +198,10 @@ export default class EditPointView extends AbstractStatefulView {
       this.element.querySelector('#event-end-time-1'),
       {
         dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.tripPoint.dateTo,
+        defaultDate: this._state.tripPoint.formattedDateTo,
         onClose: this.#dateToChangeHandler,
         enableTime: true,
-        minDate: this._state.tripPoint.dateFrom,
+        minDate: this._state.tripPoint.formattedDateFrom,
         locale: {
           firstDayOfWeek: 1
         },
@@ -214,20 +214,20 @@ export default class EditPointView extends AbstractStatefulView {
     this._setState({
       tripPoint: {
         ...this._state.tripPoint,
-        dateFrom: userDate
+        formattedDateFrom: userDate
       }
     });
-    this.#datepickerTo.set('minDate', this._state.tripPoint.dateFrom);
+    this.#datepickerTo.set('minDate', this._state.tripPoint.formattedDateFrom);
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._setState({
       tripPoint: {
         ...this._state.tripPoint,
-        dateTo: userDate
+        formattedDateTo: userDate
       }
     });
-    this.#datepickerFrom.set('maxDate', this._state.tripPoint.dateTo);
+    this.#datepickerFrom.set('maxDate', this._state.tripPoint.formattedDateTo);
   };
 
   removeElement = () => {
