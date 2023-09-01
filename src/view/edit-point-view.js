@@ -27,9 +27,9 @@ function createEditPointTemplate({state, allOffers, allDestinations, destination
   const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
 
   const getOfferCheckboxes = () => currentTypeOffers.map((offer) => {
-    const checked = checkedOffersForPoint.includes(offer) ? 'checked' : '';
+    const checked = checkedOffersForPoint.some((checkedOffer) => checkedOffer.id === offer.id) ? 'checked' : '';
     return `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checked}>
+      <input class="event__offer-checkbox  visually-hidden" data-offer-id="${offer.id}"  id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checked}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -171,10 +171,16 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputChange);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);
 
-    const offerBlock = this.element.querySelector('.event__available-offers');
+    /*const offerBlock = this.element.querySelector('.event__available-offers');
 
     if(offerBlock){
       offerBlock.addEventListener('change', this.#offerClickHanlder);
+    }*/
+    const offerCheckboxes = this.element.querySelectorAll('.event__offer-checkbox');
+    if (offerCheckboxes) {
+      offerCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', this.#offerClickHanlder);
+      });
     }
   };
 
@@ -203,17 +209,23 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #offerClickHanlder = (evt) => {
-    evt.preventDefault();
+    const offerId = evt.target.getAttribute('data-offer-id');// Идентификатор предложения из name чекбокса
+    const isChecked = evt.target.checked;// Состояние чекбокса
 
-    const checkedBoxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    const newCheckedOffersForPoint = isChecked
+      ? [...this._state.tripPoint.checkedOffersForPoint, offerId]
+      : this._state.tripPoint.checkedOffersForPoint.filter((existingOfferId) => existingOfferId !== offerId);
 
     this._setState({
+      ...this._state,
       tripPoint: {
         ...this._state.tripPoint,
-        offers: checkedBoxes.map((element) => element.dataset.offerId)
-      }
+        checkedOffersForPoint: newCheckedOffersForPoint,
+      },
     });
+    console.log(this._state);
   };
+
 
   #priceInputChange = (evt) => {
     evt.preventDefault();
