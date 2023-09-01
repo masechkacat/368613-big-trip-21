@@ -147,8 +147,6 @@ export default class EditPointView extends AbstractStatefulView {
 
   constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations, onFormSubmit, onCloseEditFormButton}) {
     super();
-    const { destinationForPoint } = tripPoint;
-    this.destinationForPoint = destinationForPoint;
     this._setState(EditPointView.parsePointToState({tripPoint}));
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
@@ -159,7 +157,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditPointTemplate({state: this._state, allOffers: this.#allOffers, allDestinations: this.#allDestinations, destinationForPoint: this.destinationForPoint});
+    return createEditPointTemplate({state: this._state, allOffers: this.#allOffers, allDestinations: this.#allDestinations, destinationForPoint: this._state.tripPoint.destinationForPoint});
   }
 
   reset = (tripPoint) => this.updateElement({tripPoint});
@@ -171,7 +169,6 @@ export default class EditPointView extends AbstractStatefulView {
       element.addEventListener('change', this.#typeInputClick);
     });
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputChange);
-    console.log(this.element.querySelector('.event__input--destination'));
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);
 
     const offerBlock = this.element.querySelector('.event__available-offers');
@@ -183,6 +180,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+    console.log(this._state);
     this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
@@ -231,27 +229,19 @@ export default class EditPointView extends AbstractStatefulView {
   #destinationInputChange = (evt) => {
     evt.preventDefault();
 
-    console.log("Input value:", evt.target.value);  // Добавлено для отладки
-  console.log("All Destinations:", this.#allDestinations);  // Добавлено для отладки
-
     const selectedDestination = this.#allDestinations.find((destination) => destination.name === evt.target.value);
-    console.log(selectedDestination);
-
     const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
 
     this.updateElement({
       tripPoint: {
         ...this._state.tripPoint,
+        destinationForPoint: selectedDestination,
         destination: selectedDestinationId
       }
     });
   };
 
-  //static parsePointToState = ({tripPoint}) => ({tripPoint});
-  static parsePointToState = ({tripPoint}) => {
-    console.log("Parsing point to state:", tripPoint);
-    return {tripPoint};
-  };
+  static parsePointToState = ({tripPoint}) => ({tripPoint});
 
   static parseStateToPoint = (state) => state.tripPoint;
 }
