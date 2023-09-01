@@ -171,16 +171,10 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputChange);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);
 
-    /*const offerBlock = this.element.querySelector('.event__available-offers');
+    const offerBlock = this.element.querySelector('.event__available-offers');
 
     if(offerBlock){
       offerBlock.addEventListener('change', this.#offerClickHanlder);
-    }*/
-    const offerCheckboxes = this.element.querySelectorAll('.event__offer-checkbox');
-    if (offerCheckboxes) {
-      offerCheckboxes.forEach((checkbox) => {
-        checkbox.addEventListener('change', this.#offerClickHanlder);
-      });
     }
   };
 
@@ -209,18 +203,20 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #offerClickHanlder = (evt) => {
-    const offerId = evt.target.getAttribute('data-offer-id');// Идентификатор предложения из name чекбокса
-    const isChecked = evt.target.checked;// Состояние чекбокса
+    evt.preventDefault();
+    //const offerId = evt.target.getAttribute('data-offer-id');
 
-    const newCheckedOffersForPoint = isChecked
-      ? [...this._state.tripPoint.checkedOffersForPoint, offerId]
-      : this._state.tripPoint.checkedOffersForPoint.filter((existingOfferId) => existingOfferId !== offerId);
+    const newCheckedOffersForPoint = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'))
+      .map((offer) => offer.dataset.offerId);
 
     this._setState({
       ...this._state,
       tripPoint: {
         ...this._state.tripPoint,
-        checkedOffersForPoint: newCheckedOffersForPoint,
+        offers: newCheckedOffersForPoint,
+        checkedOffersForPoint: this.#allOffers
+          .find((offer) => offer.type === this._state.tripPoint.type).offers
+          .filter((offer) => newCheckedOffersForPoint.includes(offer.id))
       },
     });
     console.log(this._state);
