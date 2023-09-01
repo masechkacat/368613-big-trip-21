@@ -1,5 +1,7 @@
 import { formatDate, FormatsDate } from '../utils/utiles.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import 'flatpickr/dist/flatpickr.min.css';
+import flatpickr from 'flatpickr';
 
 const DEFAULT_POINT = {
   basePrice: 0,
@@ -17,9 +19,15 @@ const DEFAULT_POINT = {
 
 function createEditPointTemplate({state, allOffers, allDestinations}) {
   const {tripPoint} = state;
-  const {basePrice, formattedDateFrom, formattedDateTo, checkedOffersForPoint,
-    type, destinationForPoint, currentTypeOffers,
-    hideOffersSection, hideDesinationSection, hideEventDetailsSection} = tripPoint;
+  const {basePrice, checkedOffersForPoint, type, destinationForPoint, formattedDateFrom, formattedDateTo} = tripPoint;
+
+  const currentType = (tripPoint === DEFAULT_POINT) ? DEFAULT_POINT.type : tripPoint.type;
+  const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
+  const hasOffersForType = currentTypeOffers.length > 0;
+  const hideOffersSection = !hasOffersForType;
+  const hideDesinationSection = !tripPoint.destinationForPoint.id;
+  const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
+
 
   const getOfferCheckboxes = () => currentTypeOffers.map((offer) => {
     const checked = checkedOffersForPoint.some((checkedOffer) => checkedOffer.id === offer.id) ? 'checked' : '';
@@ -131,17 +139,16 @@ export default class EditPointView extends AbstractStatefulView {
   #allDestinations = null;
   #handleFormSubmit = null;
   #handleCloseEditFormButton = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations, onFormSubmit, onCloseEditFormButton}) {
     super();
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
-    this._setState(EditPointView.parsePointToState(tripPoint, this.#allOffers, this.#allDestinations));
-
-
+    this._setState(EditPointView.parsePointToState(tripPoint));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseEditFormButton = onCloseEditFormButton;
-
     this._restoreHandlers();
   }
 
@@ -151,7 +158,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   reset(tripPoint) {
     this.updateElement(
-      EditPointView.parsePointToState(tripPoint, this.#allOffers,this.#allDestinations),
+      EditPointView.parsePointToState(tripPoint),
     );
   }
 
@@ -168,6 +175,72 @@ export default class EditPointView extends AbstractStatefulView {
 
     if(offerBlock){
       offerBlock.addEventListener('change', this.#offerClickHanlder);
+    }
+    this.#setDatepickers();
+  };
+
+  #setDatepickers = () => {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.tripPoint.dateFrom,
+        onClose: this.#dateFromChangeHandler,
+        enableTime: true,
+        maxDate: this._state.tripPoint.dateTo,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        'time_24hr': true
+      });
+
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.tripPoint.dateTo,
+        onClose: this.#dateToChangeHandler,
+        enableTime: true,
+        minDate: this._state.tripPoint.dateFrom,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        'time_24hr': true
+      }
+    );
+  };
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this._setState({
+      tripPoint: {
+        ...this._state.tripPoint,
+        dateFrom: userDate
+      }
+    });
+    this.#datepickerTo.set('minDate', this._state.tripPoint.dateFrom);
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this._setState({
+      tripPoint: {
+        ...this._state.tripPoint,
+        dateTo: userDate
+      }
+    });
+    this.#datepickerFrom.set('maxDate', this._state.tripPoint.dateTo);
+  };
+
+  removeElement = () => {
+    super.removeElement();
+
+    if(this.#datepickerFrom){
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if(this.#datepickerTo){
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
     }
   };
 
@@ -212,8 +285,8 @@ export default class EditPointView extends AbstractStatefulView {
           .filter((offer) => newCheckedOffersForPoint.includes(offer.id.toString()))
       },
     });
+    console.log(this._state);
   };
-
 
   #priceInputChange = (evt) => {
     evt.preventDefault();
@@ -256,25 +329,17 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  static parsePointToState(tripPoint, allOffers, allDestinations) {
+  static parsePointToState(tripPoint) {
+
+
     const formattedDateFrom = typeof tripPoint.dateFrom === 'string' ? '' : formatDate(tripPoint.dateFrom, FormatsDate.DMYHM);
     const formattedDateTo = typeof tripPoint.dateTo === 'string' ? '' : formatDate(tripPoint.dateTo, FormatsDate.DMYHM);
 
-    const currentType = (tripPoint === DEFAULT_POINT) ? DEFAULT_POINT.type : tripPoint.type;
-    const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
-    const hasOffersForType = currentTypeOffers.length > 0;
-    const hideOffersSection = !hasOffersForType;
-    const hideDesinationSection = !tripPoint.destinationForPoint.id;
-    const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
 
     return {
       tripPoint: {
-        ...tripPoint,
-        formattedDateFrom, formattedDateTo, currentTypeOffers, hasOffersForType,
-        hideOffersSection, hideDesinationSection, hideEventDetailsSection
-      },
-      allOffers,
-      allDestinations
+        ...tripPoint, formattedDateFrom, formattedDateTo
+      }
     };
   }
 

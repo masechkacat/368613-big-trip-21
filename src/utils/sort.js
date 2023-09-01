@@ -7,9 +7,9 @@ if(!Array.prototype.toSorted){
 }
 
 const sort = {
-  [SortType.DAY]: (events) => events.toSorted(getPointsByDate),
-  [SortType.PRICE]: (events) => events.toSorted(getEPointsByPrice),
-  [SortType.TIME]: (events) => events.toSorted(getPointsByDuration),
+  [SortType.DAY]: (points) => points.toSorted(getPointsByDate),
+  [SortType.PRICE]: (points) => points.toSorted(getEPointsByPrice),
+  [SortType.TIME]: (points) => points.toSorted(getPointsByDuration),
   [SortType.EVENT]: () => {
     throw new Error(`Сортивка по ${SortType.EVENT} недоступна`);
   },

@@ -85,7 +85,7 @@ export default class PointPresenter {
   }
 
   #replaceFormToCard() {
-    this.#pointEditComponent.reset(this.#point, this.#allOffers, this.#allDestinations);
+    this.#pointEditComponent.reset(this.#point);
     replace(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
@@ -94,7 +94,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      this.#pointEditComponent.reset(this.#point, this.#allOffers, this.#allDestinations);
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   };
