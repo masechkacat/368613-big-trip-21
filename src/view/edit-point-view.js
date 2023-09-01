@@ -15,16 +15,11 @@ const DEFAULT_POINT = {
   type: 'flight'
 };
 
-function createEditPointTemplate({state, allOffers, allDestinations, destinationForPoint}) {
+function createEditPointTemplate({state, allOffers, allDestinations}) {
   const {tripPoint} = state;
-  const {basePrice, dateFrom, dateTo, checkedOffersForPoint, type} = tripPoint;
-
-  const formattedDateFrom = typeof dateFrom === 'string' ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
-  const formattedDateTo = typeof dateTo === 'string' ? '' : formatDate(dateTo, FormatsDate.DMYHM);
-
-  const currentType = (tripPoint === DEFAULT_POINT) ? DEFAULT_POINT.type : type;
-
-  const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
+  const {basePrice, formattedDateFrom, formattedDateTo, checkedOffersForPoint,
+    type, destinationForPoint, currentTypeOffers,
+    hideOffersSection, hideDesinationSection, hideEventDetailsSection} = tripPoint;
 
   const getOfferCheckboxes = () => currentTypeOffers.map((offer) => {
     const checked = checkedOffersForPoint.some((checkedOffer) => checkedOffer.id === offer.id) ? 'checked' : '';
@@ -37,14 +32,6 @@ function createEditPointTemplate({state, allOffers, allDestinations, destination
       </label>
     </div>`;
   }).join('');
-
-  const hasOffersForType = currentTypeOffers.length > 0;
-
-  const hideOffersSection = !hasOffersForType;
-
-  const hideDesinationSection = !destinationForPoint.id;
-
-  const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
 
   const imagesDestination = destinationForPoint.id
     ? destinationForPoint.pictures.map((pictures) => `<img class="event__photo" src="${pictures.src}" alt="Event photo">`).join('')
@@ -147,9 +134,11 @@ export default class EditPointView extends AbstractStatefulView {
 
   constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations, onFormSubmit, onCloseEditFormButton}) {
     super();
-    this._setState(EditPointView.parsePointToState({tripPoint}));
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
+    this._setState(EditPointView.parsePointToState(tripPoint, this.#allOffers, this.#allDestinations));
+
+
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseEditFormButton = onCloseEditFormButton;
 
@@ -157,10 +146,14 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditPointTemplate({state: this._state, allOffers: this.#allOffers, allDestinations: this.#allDestinations, destinationForPoint: this._state.tripPoint.destinationForPoint});
+    return createEditPointTemplate({state: this._state, allOffers: this.#allOffers, allDestinations: this.#allDestinations});
   }
 
-  reset = (tripPoint) => this.updateElement({tripPoint});
+  reset(tripPoint) {
+    this.updateElement(
+      EditPointView.parsePointToState(tripPoint, this.#allOffers,this.#allDestinations),
+    );
+  }
 
   _restoreHandlers = () => {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditFormButtonHandler);
@@ -180,7 +173,6 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    console.log(this._state);
     this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
@@ -192,11 +184,13 @@ export default class EditPointView extends AbstractStatefulView {
 
   #typeInputClick = (evt) => {
     evt.preventDefault();
+    const newTypeOffers = this.#allOffers.find((offer) => offer.type === evt.target.value)?.offers ?? [];
 
     this.updateElement({
       tripPoint: {
         ...this._state.tripPoint,
         type: evt.target.value,
+        currentTypeOffers: newTypeOffers,
         offers: []
       }
     });
@@ -204,7 +198,6 @@ export default class EditPointView extends AbstractStatefulView {
 
   #offerClickHanlder = (evt) => {
     evt.preventDefault();
-    //const offerId = evt.target.getAttribute('data-offer-id');
 
     const newCheckedOffersForPoint = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'))
       .map((offer) => offer.dataset.offerId);
@@ -216,10 +209,9 @@ export default class EditPointView extends AbstractStatefulView {
         offers: newCheckedOffersForPoint,
         checkedOffersForPoint: this.#allOffers
           .find((offer) => offer.type === this._state.tripPoint.type).offers
-          .filter((offer) => newCheckedOffersForPoint.includes(offer.id))
+          .filter((offer) => newCheckedOffersForPoint.includes(offer.id.toString()))
       },
     });
-    console.log(this._state);
   };
 
 
@@ -237,19 +229,54 @@ export default class EditPointView extends AbstractStatefulView {
   #destinationInputChange = (evt) => {
     evt.preventDefault();
 
-    const selectedDestination = this.#allDestinations.find((destination) => destination.name === evt.target.value);
-    const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
+    const selectedDestinationName = evt.target.value;
+    const selectedDestination = this.#allDestinations.find((destination) => destination.name === selectedDestinationName);
 
-    this.updateElement({
-      tripPoint: {
-        ...this._state.tripPoint,
-        destinationForPoint: selectedDestination,
-        destination: selectedDestinationId
-      }
-    });
+    if (selectedDestination) {
+      const updatedDestinationForPoint = {
+        ...selectedDestination,
+      };
+
+      this.updateElement({
+        tripPoint: {
+          ...this._state.tripPoint,
+          destinationForPoint: updatedDestinationForPoint,
+          destination: selectedDestination.id
+        }
+      });
+
+    } else {
+      this.updateElement({
+        tripPoint: {
+          ...this._state.tripPoint,
+          destinationForPoint: DEFAULT_POINT.destinationForPoint,
+          destination: null
+        }
+      });
+    }
   };
 
-  static parsePointToState = ({tripPoint}) => ({tripPoint});
+  static parsePointToState(tripPoint, allOffers, allDestinations) {
+    const formattedDateFrom = typeof tripPoint.dateFrom === 'string' ? '' : formatDate(tripPoint.dateFrom, FormatsDate.DMYHM);
+    const formattedDateTo = typeof tripPoint.dateTo === 'string' ? '' : formatDate(tripPoint.dateTo, FormatsDate.DMYHM);
+
+    const currentType = (tripPoint === DEFAULT_POINT) ? DEFAULT_POINT.type : tripPoint.type;
+    const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
+    const hasOffersForType = currentTypeOffers.length > 0;
+    const hideOffersSection = !hasOffersForType;
+    const hideDesinationSection = !tripPoint.destinationForPoint.id;
+    const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
+
+    return {
+      tripPoint: {
+        ...tripPoint,
+        formattedDateFrom, formattedDateTo, currentTypeOffers, hasOffersForType,
+        hideOffersSection, hideDesinationSection, hideEventDetailsSection
+      },
+      allOffers,
+      allDestinations
+    };
+  }
 
   static parseStateToPoint = (state) => state.tripPoint;
 }
