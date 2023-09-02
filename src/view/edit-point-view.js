@@ -18,14 +18,17 @@ const DEFAULT_POINT = {
 };
 
 function createEditPointTemplate({state, allOffers, allDestinations}) {
-  const {tripPoint} = state;
-  const {basePrice, checkedOffersForPoint, type, destinationForPoint, formattedDateFrom, formattedDateTo} = tripPoint;
 
-  const currentType = (tripPoint === DEFAULT_POINT) ? DEFAULT_POINT.type : tripPoint.type;
+  const {basePrice, checkedOffersForPoint, type, destinationForPoint} = state;
+
+  const formattedDateFrom = typeof state.dateFrom === 'string' ? '' : formatDate(state.dateFrom, FormatsDate.DMYHM);
+  const formattedDateTo = typeof state.dateTo === 'string' ? '' : formatDate(state.dateTo, FormatsDate.DMYHM);
+
+  const currentType = (state === DEFAULT_POINT) ? DEFAULT_POINT.type : state.type;
   const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
   const hasOffersForType = currentTypeOffers.length > 0;
   const hideOffersSection = !hasOffersForType;
-  const hideDesinationSection = !tripPoint.destinationForPoint.id;
+  const hideDesinationSection = !state.destinationForPoint.id;
   const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
 
 
@@ -184,10 +187,10 @@ export default class EditPointView extends AbstractStatefulView {
       this.element.querySelector('#event-start-time-1'),
       {
         dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.tripPoint.formattedDateFrom,
+        defaultDate: this._state.dateFrom,
         onClose: this.#dateFromChangeHandler,
         enableTime: true,
-        maxDate: this._state.tripPoint.formattedDateTo,
+        maxDate: this._state.dateTo,
         locale: {
           firstDayOfWeek: 1
         },
@@ -198,10 +201,10 @@ export default class EditPointView extends AbstractStatefulView {
       this.element.querySelector('#event-end-time-1'),
       {
         dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.tripPoint.formattedDateTo,
+        defaultDate: this._state.dateTo,
         onClose: this.#dateToChangeHandler,
         enableTime: true,
-        minDate: this._state.tripPoint.formattedDateFrom,
+        minDate: this._state.dateFrom,
         locale: {
           firstDayOfWeek: 1
         },
@@ -212,22 +215,16 @@ export default class EditPointView extends AbstractStatefulView {
 
   #dateFromChangeHandler = ([userDate]) => {
     this._setState({
-      tripPoint: {
-        ...this._state.tripPoint,
-        formattedDateFrom: userDate
-      }
+      dateFrom: userDate
     });
-    this.#datepickerTo.set('minDate', this._state.tripPoint.formattedDateFrom);
+    this.#datepickerTo.set('minDate', this._state.tripPoint.dateFrom);
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._setState({
-      tripPoint: {
-        ...this._state.tripPoint,
-        formattedDateTo: userDate
-      }
+      dateTo: userDate
     });
-    this.#datepickerFrom.set('maxDate', this._state.tripPoint.formattedDateTo);
+    this.#datepickerFrom.set('maxDate', this._state.tripPoint.dateTo);
   };
 
   removeElement = () => {
@@ -260,12 +257,9 @@ export default class EditPointView extends AbstractStatefulView {
     const newTypeOffers = this.#allOffers.find((offer) => offer.type === evt.target.value)?.offers ?? [];
 
     this.updateElement({
-      tripPoint: {
-        ...this._state.tripPoint,
-        type: evt.target.value,
-        currentTypeOffers: newTypeOffers,
-        offers: []
-      }
+      type: evt.target.value,
+      currentTypeOffers: newTypeOffers,
+      offers: []
     });
   };
 
@@ -276,26 +270,18 @@ export default class EditPointView extends AbstractStatefulView {
       .map((offer) => offer.dataset.offerId);
 
     this._setState({
-      ...this._state,
-      tripPoint: {
-        ...this._state.tripPoint,
-        offers: newCheckedOffersForPoint,
-        checkedOffersForPoint: this.#allOffers
-          .find((offer) => offer.type === this._state.tripPoint.type).offers
-          .filter((offer) => newCheckedOffersForPoint.includes(offer.id.toString()))
-      },
+      offers: newCheckedOffersForPoint,
+      checkedOffersForPoint: this.#allOffers
+        .find((offer) => offer.type === this._state.type).offers
+        .filter((offer) => newCheckedOffersForPoint.includes(offer.id.toString()))
     });
-    console.log(this._state);
   };
 
   #priceInputChange = (evt) => {
     evt.preventDefault();
 
     this._setState({
-      tripPoint: {
-        ...this._state.tripPoint,
-        basePrice: evt.target.value
-      }
+      basePrice: evt.target.value
     });
   };
 
@@ -311,37 +297,19 @@ export default class EditPointView extends AbstractStatefulView {
       };
 
       this.updateElement({
-        tripPoint: {
-          ...this._state.tripPoint,
-          destinationForPoint: updatedDestinationForPoint,
-          destination: selectedDestination.id
-        }
+        destinationForPoint: updatedDestinationForPoint,
+        destination: selectedDestination.id
       });
 
     } else {
       this.updateElement({
-        tripPoint: {
-          ...this._state.tripPoint,
-          destinationForPoint: DEFAULT_POINT.destinationForPoint,
-          destination: null
-        }
+        destinationForPoint: DEFAULT_POINT.destinationForPoint,
+        destination: null
       });
     }
   };
 
-  static parsePointToState(tripPoint) {
-
-
-    const formattedDateFrom = typeof tripPoint.dateFrom === 'string' ? '' : formatDate(tripPoint.dateFrom, FormatsDate.DMYHM);
-    const formattedDateTo = typeof tripPoint.dateTo === 'string' ? '' : formatDate(tripPoint.dateTo, FormatsDate.DMYHM);
-
-
-    return {
-      tripPoint: {
-        ...tripPoint, formattedDateFrom, formattedDateTo
-      }
-    };
-  }
+  static parsePointToState = (tripPoint) => ({...tripPoint });
 
   static parseStateToPoint = (state) => state.tripPoint;
 }
