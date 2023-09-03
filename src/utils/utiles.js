@@ -2,10 +2,12 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
+dayjs.extend(utc);
 
 const SortType = {
   DAY: 'day',
@@ -61,7 +63,7 @@ const getRandomArrayElement = (arr) => arr[getRandomInteger(0, arr.length - 1)];
 
 const generateID = () => Math.random().toString(36).substring(2, 10);
 
-const formatDate = (date, neededFormat) => dayjs(date).format(neededFormat);
+const formatDate = (date, neededFormat) => dayjs.utc(date).format(neededFormat);
 
 function formatDuration(startDate, endDate) {
   const diff = endDate.diff(startDate);
