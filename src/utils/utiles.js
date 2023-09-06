@@ -9,6 +9,23 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
 dayjs.extend(utc);
 
+const UserAction = {
+  UPDATE_EVENT: 'UPDATE_EVENT',
+  ADD_EVENT: 'ADD_EVENT',
+  DELETE_EVENT: 'DELETE_EVENT'
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
+
+const EditType = {
+  EDITING: 'EDITING',
+  CREATING: 'CREATING'
+};
+
 const SortType = {
   DAY: 'day',
   EVENT: 'event',
@@ -82,4 +99,4 @@ function updateItem(items, update) {
 
 export {getRandomInteger, getRandomArrayElement, generateID, formatDate,
   formatDuration, updateItem, getPointsByDate, getPointsByDuration, getEPointsByPrice,
-  SortType, FormatsDate, Filters};
+  SortType, FormatsDate, Filters, UserAction, EditType, UpdateType};
