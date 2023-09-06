@@ -215,14 +215,14 @@ export default class EditPointView extends AbstractStatefulView {
     this._setState({
       dateFrom: userDate
     });
-    this.#datepickerTo.set('minDate', this._state.tripPoint.dateFrom);
+    this.#datepickerTo.set('minDate', this._state.dateFrom);
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._setState({
       dateTo: userDate
     });
-    this.#datepickerFrom.set('maxDate', this._state.tripPoint.dateTo);
+    this.#datepickerFrom.set('maxDate', this._state.dateTo);
   };
 
   removeElement = () => {
@@ -273,7 +273,7 @@ export default class EditPointView extends AbstractStatefulView {
         .find((offer) => offer.type === this._state.type).offers
         .filter((offer) => newCheckedOffersForPoint.includes(offer.id.toString()))
     });
-    console.log(this._state);
+    //console.log(this._state);
   };
 
   #priceInputChange = (evt) => {
