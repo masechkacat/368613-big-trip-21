@@ -5,7 +5,7 @@ import { render, remove, replace, RenderPosition } from '../framework/render.js'
 import PointPresenter from './point-presenter.js';
 import { generateFilter } from '../mocks/filters-generator.js';
 import HeaderMainPresenter from './header-main-presenter.js';
-import { updateItem } from '../utils/utiles.js';
+//import { updateItem } from '../utils/utiles.js';
 import { sort } from '../utils/sort.js';
 import { SortType, UpdateType, UserAction } from '../utils/utiles.js';
 
@@ -31,12 +31,12 @@ export default class TripEventsPresenter {
       tripFilterContainer: tripFilterContainer,
       filters: filters
     });
-    this.pointsModel.addObserver(#handleModelEvent);
+    this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
-    const points = this.pointsModel.enrichedPoints;
-    return sort[this.#currentSortType]();
+    const points = this.#pointsModel.enrichedPoints;
+    return sort[this.#currentSortType](points);
   }
 
   init() {
@@ -48,13 +48,13 @@ export default class TripEventsPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#pointsModel.update(updateType, update);
+        this.#pointsModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_EVENT:
-        this.#pointsModel.add(updateType, update);
+        this.#pointsModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_EVENT:
-        this.#pointsModel.delete(updateType,update);
+        this.#pointsModel.deletePoint(updateType,update);
         break;
     }
   };

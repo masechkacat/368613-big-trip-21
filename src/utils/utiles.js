@@ -80,10 +80,10 @@ const getRandomArrayElement = (arr) => arr[getRandomInteger(0, arr.length - 1)];
 
 const generateID = () => Math.random().toString(36).substring(2, 10);
 
-const formatDate = (date, neededFormat) => dayjs.utc(date).format(neededFormat);
+const formatDate = (date, neededFormat) => dayjs(date).format(neededFormat);
 
 function formatDuration(startDate, endDate) {
-  const diff = endDate.diff(startDate);
+  const diff = dayjs(endDate).diff(dayjs(startDate));
   const durationObj = dayjs.duration(diff);
 
   const days = durationObj.days() > 0 ? `${durationObj.format('DD')}D ` : '';
@@ -93,10 +93,14 @@ function formatDuration(startDate, endDate) {
   return `${days}${hours}${minutes}`.trim();
 }
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
+function isSameDates(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 }
 
-export {getRandomInteger, getRandomArrayElement, generateID, formatDate,
-  formatDuration, updateItem, getPointsByDate, getPointsByDuration, getEPointsByPrice,
+function isSamePrices(priceA, priceB) {
+  return (priceA === null && priceB === null) || (priceA === priceB);
+}
+
+export {getRandomInteger, getRandomArrayElement, generateID, formatDate, isSameDates, isSamePrices,
+  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice,
   SortType, FormatsDate, Filters, UserAction, EditType, UpdateType};

@@ -1,6 +1,7 @@
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import { replace, render,remove } from '../framework/render.js';
+import { UpdateType, UserAction, isSameDates, isSamePrices } from '../utils/utiles.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -103,7 +104,16 @@ export default class PointPresenter {
     this.#replaceCardToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate = isSameDates(this.#point.dateFrom, update.dateFrom)
+    || isSameDates(this.#point.dateTo, update.dateTo)
+    || isSamePrices(this.#point.basePrice, update.basePrice);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update
+    );
     this.#replaceFormToCard();
   };
 
@@ -112,6 +122,9 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () =>{
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 }

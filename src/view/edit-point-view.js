@@ -21,6 +21,9 @@ function createEditPointTemplate({state, allOffers, allDestinations}) {
 
   const {basePrice, checkedOffersForPoint, type, destinationForPoint, dateFrom, dateTo} = state;
 
+  const formattedDateFrom = formatDate(state.dateFrom, FormatsDate.DMYHM);
+  const formattedDateTo = formatDate(state.dateTo, FormatsDate.DMYHM);
+
 
   const currentType = (state === DEFAULT_POINT) ? DEFAULT_POINT.type : state.type;
   const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
@@ -84,10 +87,10 @@ function createEditPointTemplate({state, allOffers, allDestinations}) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedDateFrom}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedDateTo}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -162,6 +165,7 @@ export default class EditPointView extends AbstractStatefulView {
       EditPointView.parsePointToState(tripPoint),
     );
   }
+
 
   _restoreHandlers = () => {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditFormButtonHandler);
@@ -273,7 +277,7 @@ export default class EditPointView extends AbstractStatefulView {
         .find((offer) => offer.type === this._state.type).offers
         .filter((offer) => newCheckedOffersForPoint.includes(offer.id.toString()))
     });
-    //console.log(this._state);
+    console.log(this._state);
   };
 
   #priceInputChange = (evt) => {
@@ -309,14 +313,17 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   static parsePointToState = (tripPoint) => {
-    const formattedDateFrom = typeof tripPoint.dateFrom === 'string' ? '' : formatDate(tripPoint.dateFrom, FormatsDate.DMYHM);
-    const formattedDateTo = typeof tripPoint.dateTo === 'string' ? '' : formatDate(tripPoint.dateTo, FormatsDate.DMYHM);
+    //const formattedDateFrom = formatDate(tripPoint.dateFrom, FormatsDate.DMYHM);
+    //const formattedDateTo = formatDate(tripPoint.dateTo, FormatsDate.DMYHM);
     return {
       ...tripPoint,
-      dateFrom: formattedDateFrom,
-      dateTo: formattedDateTo
+      //dateFrom: formattedDateFrom,
+      //dateTo: formattedDateTo
     };
   };
 
-  static parseStateToPoint = (state) => state.tripPoint;
+  static parseStateToPoint = (state) => {
+    const tripPoint = {...state};
+    return tripPoint;
+  };
 }
