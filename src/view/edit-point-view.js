@@ -21,8 +21,8 @@ function createEditPointTemplate({state, allOffers, allDestinations}) {
 
   const {basePrice, checkedOffersForPoint, type, destinationForPoint, dateFrom, dateTo} = state;
 
-  const formattedDateFrom = formatDate(state.dateFrom, FormatsDate.DMYHM);
-  const formattedDateTo = formatDate(state.dateTo, FormatsDate.DMYHM);
+  const formattedDateFrom = formatDate(dateFrom, FormatsDate.DMYHM);
+  const formattedDateTo = formatDate(dateTo, FormatsDate.DMYHM);
 
 
   const currentType = (state === DEFAULT_POINT) ? DEFAULT_POINT.type : state.type;
@@ -143,16 +143,18 @@ export default class EditPointView extends AbstractStatefulView {
   #allDestinations = null;
   #handleFormSubmit = null;
   #handleCloseEditFormButton = null;
+  #handleDeleteEditFormButton = null;
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations, onFormSubmit, onCloseEditFormButton}) {
+  constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations, onFormSubmit, onCloseEditFormButton, onDeleteEditFormButton}) {
     super();
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
     this._setState(EditPointView.parsePointToState(tripPoint));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseEditFormButton = onCloseEditFormButton;
+    this.#handleDeleteEditFormButton = onDeleteEditFormButton;
     this._restoreHandlers();
   }
 
@@ -175,6 +177,7 @@ export default class EditPointView extends AbstractStatefulView {
     });
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputChange);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteEditFormButtonHandler);
 
     const offerBlock = this.element.querySelector('.event__available-offers');
 
@@ -248,6 +251,11 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
+  #deleteEditFormButtonHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteEditFormButton(EditPointView.parseStateToPoint(this._state));
+  };
+
   #closeEditFormButtonHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseEditFormButton();
@@ -277,7 +285,7 @@ export default class EditPointView extends AbstractStatefulView {
         .find((offer) => offer.type === this._state.type).offers
         .filter((offer) => newCheckedOffersForPoint.includes(offer.id.toString()))
     });
-    console.log(this._state);
+    //console.log(this._state);
   };
 
   #priceInputChange = (evt) => {
@@ -312,15 +320,9 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  static parsePointToState = (tripPoint) => {
-    //const formattedDateFrom = formatDate(tripPoint.dateFrom, FormatsDate.DMYHM);
-    //const formattedDateTo = formatDate(tripPoint.dateTo, FormatsDate.DMYHM);
-    return {
-      ...tripPoint,
-      //dateFrom: formattedDateFrom,
-      //dateTo: formattedDateTo
-    };
-  };
+  static parsePointToState = (tripPoint) => ({
+    ...tripPoint,
+  });
 
   static parseStateToPoint = (state) => {
     const tripPoint = {...state};
