@@ -47,7 +47,7 @@ const FilterType = {
   PAST: 'past'
 };
 
-const Filters = {
+const filter = {
   [FilterType.EVERYTHING]: (points) => points,
   [FilterType.FUTURE]: (points) => points.filter((point) => dayjs(point.dateFrom).isAfter(dayjs())),
   [FilterType.PRESENT]: (points) => points.filter((point) => dayjs(point.dateFrom)
@@ -103,4 +103,4 @@ function isSamePrices(priceA, priceB) {
 
 export {getRandomInteger, getRandomArrayElement, generateID, formatDate, isSameDates, isSamePrices,
   formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice,
-  SortType, FormatsDate, Filters, UserAction, EditType, UpdateType};
+  SortType, FormatsDate, filter, UserAction, EditType, UpdateType, FilterType};

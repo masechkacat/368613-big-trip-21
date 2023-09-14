@@ -6,11 +6,12 @@ import PointPresenter from './point-presenter.js';
 
 //import { updateItem } from '../utils/utiles.js';
 import { sort } from '../utils/sort.js';
-import { SortType, UpdateType, UserAction } from '../utils/utiles.js';
+import { SortType, UpdateType, UserAction, filter, FilterType } from '../utils/utiles.js';
 
 export default class TripEventsPresenter {
   #tripEventsContainer = null;
   #pointsModel = null;
+  #filterModel = null;
 
   #tripSortComponent = null;
   #tripListComponent = new ListView();
@@ -18,17 +19,24 @@ export default class TripEventsPresenter {
 
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor ({tripEventsContainer, pointsModel}) {
+  constructor ({tripEventsContainer, pointsModel, filterModel}) {
     this.#tripEventsContainer = tripEventsContainer;
     this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    this.#filterType = this.#filterModel.filter;
+
     const points = this.#pointsModel.enrichedPoints;
-    return sort[this.#currentSortType](points);
+    const filteredPoints = filter[this.#filterType](points);
+
+    return sort[this.#currentSortType](filteredPoints);
   }
 
   init() {
