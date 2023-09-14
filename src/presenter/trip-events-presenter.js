@@ -3,8 +3,7 @@ import ListView from '../view/list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import { render, remove, replace, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-import { generateFilter } from '../mocks/filters-generator.js';
-import HeaderMainPresenter from './header-main-presenter.js';
+
 //import { updateItem } from '../utils/utiles.js';
 import { sort } from '../utils/sort.js';
 import { SortType, UpdateType, UserAction } from '../utils/utiles.js';
@@ -20,17 +19,10 @@ export default class TripEventsPresenter {
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
 
-  constructor ({tripEventsContainer, pointsModel, tripInfoContainer, tripFilterContainer}) {
+  constructor ({tripEventsContainer, pointsModel}) {
     this.#tripEventsContainer = tripEventsContainer;
     this.#pointsModel = pointsModel;
 
-    const filters = generateFilter(this.#pointsModel.enrichedPoints);
-
-    this.headerMainPresenter = new HeaderMainPresenter({
-      tripInfoContainer: tripInfoContainer,
-      tripFilterContainer: tripFilterContainer,
-      filters: filters
-    });
     this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
@@ -41,7 +33,6 @@ export default class TripEventsPresenter {
 
   init() {
 
-    this.headerMainPresenter.init();
     this.#renderTripEvents();
   }
 
