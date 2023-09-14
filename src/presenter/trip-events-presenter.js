@@ -3,8 +3,6 @@ import ListView from '../view/list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import { render, remove, replace, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-
-//import { updateItem } from '../utils/utiles.js';
 import { sort } from '../utils/sort.js';
 import { SortType, UpdateType, UserAction, filter, FilterType } from '../utils/utiles.js';
 
@@ -15,7 +13,7 @@ export default class TripEventsPresenter {
 
   #tripSortComponent = null;
   #tripListComponent = new ListView();
-  #noPointComponent = new NoPointView();
+  #noPointComponent = null;
 
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
@@ -138,6 +136,9 @@ export default class TripEventsPresenter {
 
 
   #renderNoPoints() {
+    this.#noPointComponent = new NoPointView({
+      filterType: this.#filterType
+    });
     render(this.#noPointComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
   }
 
