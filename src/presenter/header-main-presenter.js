@@ -1,5 +1,6 @@
 import FilterView from '../view/filter-view';
 import TripInfoView from '../view/trip-info-view';
+import NewPointButtonView from '../view/new-point-button-view';
 import { render, replace, remove, RenderPosition } from '../framework/render.js';
 import {SortType, FilterType, UpdateType, filter} from '../utils/utiles.js';
 import { sort } from '../utils/sort.js';
@@ -10,17 +11,20 @@ export default class HeaderMainPresenter {
   #tripFilterContainer = null;
   #filterModel = null;
   #pointsModel = null;
+  #clickModel = null;
 
+  #newPointButtonComponent = null;
   #tripFilterComponent = null;
   #tripInfoComponent = null;
 
   #points = null;
 
-  constructor ({tripInfoContainer, tripFilterContainer, filterModel, pointsModel}) {
+  constructor ({tripInfoContainer, tripFilterContainer, filterModel, pointsModel, clickModel}) {
     this.#tripInfoContainer = tripInfoContainer;
     this.#tripFilterContainer = tripFilterContainer;
     this.#filterModel = filterModel;
     this.#pointsModel = pointsModel;
+    this.#clickModel = clickModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -38,7 +42,21 @@ export default class HeaderMainPresenter {
   init() {
     this.#renderTripInfo();
     this.#renderFilters();
+    this.#renderNewButton();
   }
+
+  #renderNewButton() {
+    this.#newPointButtonComponent = new NewPointButtonView({
+      onClick: this.#handleNewPointButtonClick()
+    });
+    render(this.#newPointButtonComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
+
+  }
+
+  #handleNewPointButtonClick () {
+    this.#clickModel.setClickState (UpdateType.MINOR, 'creating');
+  }
+
 
   #renderTripInfo () {
     const prevTripInfoComponent = this.#tripInfoComponent;
