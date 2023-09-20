@@ -9,6 +9,12 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
 dayjs.extend(utc);
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  CREATING: 'CREATING',
+};
+
 const UserAction = {
   UPDATE_EVENT: 'UPDATE_EVENT',
   ADD_EVENT: 'ADD_EVENT',
@@ -102,5 +108,5 @@ function isSamePrices(priceA, priceB) {
 }
 
 export {getRandomInteger, getRandomArrayElement, generateID, formatDate, isSameDates, isSamePrices,
-  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice,
+  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice, Mode,
   SortType, FormatsDate, filter, UserAction, EditType, UpdateType, FilterType};

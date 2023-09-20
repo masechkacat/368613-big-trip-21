@@ -1,15 +1,18 @@
 import Observable from '../framework/observable.js';
-
 export default class ClickModel extends Observable {
-  #currentState = null;
+  #currentState = {
+    isCreating: false
+  };
 
   get clickState() {
     return this.#currentState;
   }
 
-  setclickState(updateType, state) {
-    this.#currentState = state;
-    this._notify('clickStateChanged', updateType, state);
+  setClickState(updateType, state) {
+    this.#currentState = {
+      ...this.#currentState,
+      isCreating: state === 'creating'
+    };
+    this._notify('clickStateChanged', updateType, this.#currentState);
   }
-
 }

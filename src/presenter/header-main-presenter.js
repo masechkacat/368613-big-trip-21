@@ -47,15 +47,15 @@ export default class HeaderMainPresenter {
 
   #renderNewButton() {
     this.#newPointButtonComponent = new NewPointButtonView({
-      onClick: this.#handleNewPointButtonClick()
+      onClick: this.#handleNewPointButtonClick
     });
-    render(this.#newPointButtonComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
+    render(this.#newPointButtonComponent, this.#tripInfoContainer, RenderPosition.BEFOREEND);
 
   }
 
-  #handleNewPointButtonClick () {
+  #handleNewPointButtonClick = () => {
     this.#clickModel.setClickState (UpdateType.MINOR, 'creating');
-  }
+  };
 
 
   #renderTripInfo () {

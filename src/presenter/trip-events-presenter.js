@@ -3,6 +3,7 @@ import ListView from '../view/list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import { render, remove, replace, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
+import NewPointPresenter from './new-point-presenter.js';
 import { sort } from '../utils/sort.js';
 import { SortType, UpdateType, UserAction, filter, FilterType } from '../utils/utiles.js';
 
@@ -10,20 +11,32 @@ export default class TripEventsPresenter {
   #tripEventsContainer = null;
   #pointsModel = null;
   #filterModel = null;
+  #clickModel = null;
 
   #tripSortComponent = null;
   #tripListComponent = new ListView();
   #noPointComponent = null;
 
+  #newPointPresenter = null;
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
-  constructor ({tripEventsContainer, pointsModel, filterModel}) {
+  constructor ({tripEventsContainer, pointsModel, filterModel, clickModel}) {
     this.#tripEventsContainer = tripEventsContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#clickModel = clickModel;
 
+    this.#newPointPresenter = new NewPointPresenter({
+      pointListContainer: this.#tripEventsContainer,
+      allOffers: this.#pointsModel.offers,
+      allDestinations: this.#pointsModel.destinations,
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#handleNewPointDestroy,
+    });
+
+    this.#clickModel.addObserver(this.#handleClickStateChanged);
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -73,8 +86,22 @@ export default class TripEventsPresenter {
   };
 
   #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
+
+  #handleClickStateChanged = (updateType, state) => {
+    if (state === 'creating') {
+      this.#handleNewPointFormOpen();
+    }
+  };
+
+  #handleNewPointFormOpen() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    this.#newPointPresenter.init();
+  }
 
 
   #handleSortTypeChange = (sortType) => {
@@ -88,8 +115,18 @@ export default class TripEventsPresenter {
     this.#renderTripEvents();
   };
 
+  #handleNewPointDestroy = () => {
+
+    if(!this.points.length){
+      remove(this.#tripSortComponent);
+      this.#tripSortComponent = null;
+      this.#renderNoPoints();
+    }
+  };
+
 
   #clearPointList() {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
   }
