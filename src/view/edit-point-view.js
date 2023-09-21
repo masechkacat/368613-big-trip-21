@@ -5,8 +5,8 @@ import flatpickr from 'flatpickr';
 
 const DEFAULT_POINT = {
   basePrice: 0,
-  dateFrom: '',
-  dateTo: '',
+  dateFrom: '2023-11-23T18:28:01.397Z',
+  dateTo: '2023-11-23T18:28:01.397Z',
   destinationForPoint: {
     description: '',
     name: '',
@@ -253,6 +253,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #deleteEditFormButtonHandler = (evt) => {
     evt.preventDefault();
+    console.log('dlt btn from view');
     this.#handleDeleteEditFormButton(EditPointView.parseStateToPoint(this._state));
   };
 

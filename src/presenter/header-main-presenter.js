@@ -2,7 +2,7 @@ import FilterView from '../view/filter-view';
 import TripInfoView from '../view/trip-info-view';
 import NewPointButtonView from '../view/new-point-button-view';
 import { render, replace, remove, RenderPosition } from '../framework/render.js';
-import {SortType, FilterType, UpdateType, filter} from '../utils/utiles.js';
+import {SortType, FilterType, UpdateType, filter, Mode} from '../utils/utiles.js';
 import { sort } from '../utils/sort.js';
 
 
@@ -46,15 +46,20 @@ export default class HeaderMainPresenter {
   }
 
   #renderNewButton() {
-    this.#newPointButtonComponent = new NewPointButtonView({
-      onClick: this.#handleNewPointButtonClick
-    });
-    render(this.#newPointButtonComponent, this.#tripInfoContainer, RenderPosition.BEFOREEND);
+    if (!this.#newPointButtonComponent) {
+      this.#newPointButtonComponent = new NewPointButtonView({
+        onClick: this.#handleNewPointButtonClick
+      });
+    }
 
+    const isCreating = this.#clickModel.clickState === Mode.CREATING;
+    this.#newPointButtonComponent.disable(isCreating);
+
+    render(this.#newPointButtonComponent, this.#tripInfoContainer, RenderPosition.BEFOREEND);
   }
 
   #handleNewPointButtonClick = () => {
-    this.#clickModel.setClickState (UpdateType.MINOR, 'creating');
+    this.#clickModel.setClickState (UpdateType.MINOR, Mode.CREATING);
   };
 
 
@@ -81,9 +86,9 @@ export default class HeaderMainPresenter {
 
   getTotalSumm() {
     return this.#points.reduce((total, point) => {
-      const basePrice = point.basePrice || 0; // базовая цена поинта, если есть
-      const offersPrice = point.checkedOffersForPoint.reduce((offerTotal, offer) => offerTotal + offer.price, 0); // сумма стоимости выбранных офферов
-      return total + basePrice + offersPrice; // общая сумма для данного поинта
+      const basePrice = point.basePrice || 0;
+      const offersPrice = point.checkedOffersForPoint.reduce((offerTotal, offer) => offerTotal + offer.price, 0);
+      return total + basePrice + offersPrice;
     }, 0);
   }
 

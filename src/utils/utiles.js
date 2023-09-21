@@ -27,10 +27,6 @@ const UpdateType = {
   MAJOR: 'MAJOR'
 };
 
-const EditType = {
-  EDITING: 'EDITING',
-  CREATING: 'CREATING'
-};
 
 const SortType = {
   DAY: 'day',
@@ -109,4 +105,4 @@ function isSamePrices(priceA, priceB) {
 
 export {getRandomInteger, getRandomArrayElement, generateID, formatDate, isSameDates, isSamePrices,
   formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice, Mode,
-  SortType, FormatsDate, filter, UserAction, EditType, UpdateType, FilterType};
+  SortType, FormatsDate, filter, UserAction, UpdateType, FilterType};

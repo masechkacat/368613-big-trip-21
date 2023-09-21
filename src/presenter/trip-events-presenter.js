@@ -5,7 +5,7 @@ import { render, remove, replace, RenderPosition } from '../framework/render.js'
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { sort } from '../utils/sort.js';
-import { SortType, UpdateType, UserAction, filter, FilterType } from '../utils/utiles.js';
+import { SortType, UpdateType, UserAction, filter, FilterType, Mode } from '../utils/utiles.js';
 
 export default class TripEventsPresenter {
   #tripEventsContainer = null;
@@ -32,6 +32,7 @@ export default class TripEventsPresenter {
       pointListContainer: this.#tripEventsContainer,
       allOffers: this.#pointsModel.offers,
       allDestinations: this.#pointsModel.destinations,
+      clickModel:this.#clickModel,
       onDataChange: this.#handleViewAction,
       onDestroy: this.#handleNewPointDestroy,
     });
@@ -91,7 +92,7 @@ export default class TripEventsPresenter {
   };
 
   #handleClickStateChanged = (updateType, state) => {
-    if (state === 'creating') {
+    if (state) {
       this.#handleNewPointFormOpen();
     }
   };
@@ -116,6 +117,7 @@ export default class TripEventsPresenter {
   };
 
   #handleNewPointDestroy = () => {
+
 
     if(!this.points.length){
       remove(this.#tripSortComponent);
