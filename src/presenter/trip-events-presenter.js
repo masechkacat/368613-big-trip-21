@@ -117,6 +117,7 @@ export default class TripEventsPresenter {
   };
 
   #handleNewPointDestroy = () => {
+    this.#clickModel.setClickState(UpdateType.MINOR, Mode.DEFAULT);
 
 
     if(!this.points.length){

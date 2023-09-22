@@ -6,18 +6,16 @@ export default class NewPointPresenter {
   #pointListContainer = null;
   #allOffers = null;
   #allDestinations = null;
-  #clickModel = null;
 
   #handleDataChange = null;
   #handleDestroy = null;
 
   #pointEditComponent = null;
 
-  constructor({pointListContainer, allOffers, allDestinations, clickModel, onDataChange, onDestroy}) {
+  constructor({pointListContainer, allOffers, allDestinations, onDataChange, onDestroy}) {
     this.#pointListContainer = pointListContainer;
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
-    this.#clickModel = clickModel;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
   }
@@ -31,7 +29,6 @@ export default class NewPointPresenter {
     this.#pointEditComponent = new EditPointView({
       allOffers: this.#allOffers,
       allDestinations: this.#allDestinations,
-      clickModel: this.#clickModel,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteEditFormButton: this.#handleDeleteEditFormButton,
       type: Mode.CREATING
@@ -47,18 +44,16 @@ export default class NewPointPresenter {
       return;
     }
 
-    this.#handleDestroy();
 
     remove(this.#pointEditComponent);
     this.#pointEditComponent = null;
 
-    //this.#clickModel.setClickState(UpdateType.MINOR, Mode.DEFAULT);
+    this.#handleDestroy();
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   #handleFormSubmit = (point) => {
-    console.log('form submited', point);
     this.#handleDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,
@@ -69,9 +64,7 @@ export default class NewPointPresenter {
   };
 
   #handleDeleteEditFormButton = () => {
-    console.log('Before closing form. Click state:', this.#clickModel.clickState);
     this.destroy();
-    console.log('After closing form. Click state:', this.#clickModel.clickState);
   };
 
   #escKeyDownHandler = (evt) => {
