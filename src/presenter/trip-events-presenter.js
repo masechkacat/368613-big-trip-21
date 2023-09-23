@@ -11,7 +11,7 @@ export default class TripEventsPresenter {
   #tripEventsContainer = null;
   #pointsModel = null;
   #filterModel = null;
-  #clickModel = null;
+  #formStateModel = null;
 
   #tripSortComponent = null;
   #tripListComponent = new ListView();
@@ -22,22 +22,21 @@ export default class TripEventsPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
-  constructor ({tripEventsContainer, pointsModel, filterModel, clickModel}) {
+  constructor ({tripEventsContainer, pointsModel, filterModel, formStateModel}) {
     this.#tripEventsContainer = tripEventsContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-    this.#clickModel = clickModel;
+    this.#formStateModel = formStateModel;
 
     this.#newPointPresenter = new NewPointPresenter({
-      pointListContainer: this.#tripEventsContainer,
+      pointListContainer: this.#tripListComponent.element,
       allOffers: this.#pointsModel.offers,
       allDestinations: this.#pointsModel.destinations,
-      clickModel:this.#clickModel,
       onDataChange: this.#handleViewAction,
       onDestroy: this.#handleNewPointDestroy,
     });
 
-    this.#clickModel.addObserver(this.#handleClickStateChanged);
+    this.#formStateModel.addObserver(this.#handleFormStateChanged);
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -91,8 +90,8 @@ export default class TripEventsPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleClickStateChanged = (updateType, state) => {
-    if (state) {
+  #handleFormStateChanged = (state) => {
+    if (state === Mode.CREATING) {
       this.#handleNewPointFormOpen();
     }
   };
@@ -117,14 +116,15 @@ export default class TripEventsPresenter {
   };
 
   #handleNewPointDestroy = () => {
-    this.#clickModel.setClickState(UpdateType.MINOR, Mode.DEFAULT);
 
 
     if(!this.points.length){
-      remove(this.#tripSortComponent);
+      remove(this.#tripSortComponent && this.#formStateModel.formState !== Mode.CREATING);
       this.#tripSortComponent = null;
       this.#renderNoPoints();
     }
+    this.#formStateModel.formState = Mode.DEFAULT;
+
   };
 
 

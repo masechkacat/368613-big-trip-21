@@ -1,6 +1,7 @@
 import { formatDate, FormatsDate } from '../utils/utiles.js';
 import { formatDuration } from '../utils/utiles.js';
 import AbstractView from '../framework/view/abstract-view.js';
+import he from 'he';
 
 function createPointTemplate(tripPoint) {
 
@@ -43,7 +44,7 @@ function createPointTemplate(tripPoint) {
         <p class="event__duration">${humanizedDuration}</p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+        &euro;&nbsp;<span class="event__price-value">${he.encode(basePrice.toString())}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">

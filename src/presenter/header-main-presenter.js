@@ -11,7 +11,7 @@ export default class HeaderMainPresenter {
   #tripFilterContainer = null;
   #filterModel = null;
   #pointsModel = null;
-  #clickModel = null;
+  #formStateModel = null;
 
   #newPointButtonComponent = null;
   #tripFilterComponent = null;
@@ -19,15 +19,17 @@ export default class HeaderMainPresenter {
 
   #points = null;
 
-  constructor ({tripInfoContainer, tripFilterContainer, filterModel, pointsModel, clickModel}) {
+  constructor ({tripInfoContainer, tripFilterContainer, filterModel, pointsModel, formStateModel}) {
     this.#tripInfoContainer = tripInfoContainer;
     this.#tripFilterContainer = tripFilterContainer;
     this.#filterModel = filterModel;
     this.#pointsModel = pointsModel;
-    this.#clickModel = clickModel;
+    this.#formStateModel = formStateModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#formStateModel.addObserver(this.#handleModelEvent);
+
   }
 
   get filters() {
@@ -52,14 +54,14 @@ export default class HeaderMainPresenter {
       });
     }
 
-    const isCreating = this.#clickModel.clickState === Mode.CREATING;
+    const isCreating = this.#formStateModel.formState === Mode.CREATING;
     this.#newPointButtonComponent.disable(isCreating);
 
     render(this.#newPointButtonComponent, this.#tripInfoContainer, RenderPosition.BEFOREEND);
   }
 
   #handleNewPointButtonClick = () => {
-    this.#clickModel.setClickState (UpdateType.MINOR, Mode.CREATING);
+    this.#formStateModel.formState = Mode.CREATING;
   };
 
 
@@ -88,7 +90,7 @@ export default class HeaderMainPresenter {
     return this.#points.reduce((total, point) => {
       const basePrice = point.basePrice || 0;
       const offersPrice = point.checkedOffersForPoint.reduce((offerTotal, offer) => offerTotal + offer.price, 0);
-      return total + basePrice + offersPrice;
+      return total + parseInt(basePrice, 10) + offersPrice;
     }, 0);
   }
 

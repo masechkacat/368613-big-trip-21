@@ -1,19 +1,19 @@
 import Observable from '../framework/observable.js';
 import { Mode } from '../utils/utiles.js';
 
-export default class ClickModel extends Observable {
+export default class FormStateModel extends Observable {
   #currentState = Mode.DEFAULT;
 
-  get clickState() {
+  get formState() {
     return this.#currentState;
   }
 
-  setClickState(updateType, state) {
+  set formState(state) {
     if (state === Mode.CREATING) {
       this.#currentState = Mode.CREATING;
     } else {
       this.#currentState = Mode.DEFAULT;
     }
-    this._notify('clickStateChanged', updateType, this.#currentState);
+    this._notify(this.#currentState);
   }
 }
