@@ -1,11 +1,7 @@
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import { replace, render,remove } from '../framework/render.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import { UpdateType, UserAction, Mode, isSameDates, isSamePrices } from '../utils/utiles.js';
 export default class PointPresenter {
   #pointListContainer = null;
   #point = null;
@@ -45,6 +41,7 @@ export default class PointPresenter {
       allDestinations: this.#allDestinations,
       onFormSubmit: this.#handleFormSubmit,
       onCloseEditFormButton: this.#handleCloseEditFormButton,
+      onDeleteEditFormButton: this.#handleDeleteEditFormButton
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -52,8 +49,6 @@ export default class PointPresenter {
       return;
     }
 
-    // Проверка на наличие в DOM необходима,
-    // чтобы не пытаться заменить то, что не было отрисовано
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
@@ -103,8 +98,25 @@ export default class PointPresenter {
     this.#replaceCardToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate = isSameDates(this.#point.dateFrom, update.dateFrom)
+    || isSameDates(this.#point.dateTo, update.dateTo)
+    || isSamePrices(this.#point.basePrice, update.basePrice);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update
+    );
     this.#replaceFormToCard();
+  };
+
+  #handleDeleteEditFormButton = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 
   #handleCloseEditFormButton = () => {
@@ -112,6 +124,9 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () =>{
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 }

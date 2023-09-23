@@ -1,7 +1,8 @@
-import { formatDate, FormatsDate } from '../utils/utiles.js';
+import { formatDate, FormatsDate, Mode } from '../utils/utiles.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import 'flatpickr/dist/flatpickr.min.css';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 const DEFAULT_POINT = {
   basePrice: 0,
@@ -17,10 +18,12 @@ const DEFAULT_POINT = {
   type: 'flight'
 };
 
-function createEditPointTemplate({state, allOffers, allDestinations}) {
+function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 
   const {basePrice, checkedOffersForPoint, type, destinationForPoint, dateFrom, dateTo} = state;
 
+  const formattedDateFrom = (dateFrom === '') ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
+  const formattedDateTo = (dateTo === '') ? '' : formatDate(dateTo, FormatsDate.DMYHM);
 
   const currentType = (state === DEFAULT_POINT) ? DEFAULT_POINT.type : state.type;
   const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
@@ -84,10 +87,10 @@ function createEditPointTemplate({state, allOffers, allDestinations}) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedDateFrom}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedDateTo}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -95,12 +98,12 @@ function createEditPointTemplate({state, allOffers, allDestinations}) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
+        <button class="event__reset-btn" type="reset">${mode === Mode.CREATING ? 'Cancel' : 'Delete'}</button>
+          ${mode !== Mode.CREATING ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -140,22 +143,36 @@ export default class EditPointView extends AbstractStatefulView {
   #allDestinations = null;
   #handleFormSubmit = null;
   #handleCloseEditFormButton = null;
+  #handleDeleteEditFormButton = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #mode;
 
-  constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations, onFormSubmit, onCloseEditFormButton}) {
+  constructor({tripPoint = DEFAULT_POINT, allOffers, allDestinations,
+    onFormSubmit, onCloseEditFormButton, onDeleteEditFormButton, mode = Mode.EDITING}) {
+
     super();
+
     this.#allOffers = allOffers;
     this.#allDestinations = allDestinations;
+    this.#mode = mode;
+
     this._setState(EditPointView.parsePointToState(tripPoint));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseEditFormButton = onCloseEditFormButton;
+    this.#handleDeleteEditFormButton = onDeleteEditFormButton;
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditPointTemplate({state: this._state, allOffers: this.#allOffers, allDestinations: this.#allDestinations});
+    return createEditPointTemplate({
+      state: this._state,
+      allOffers: this.#allOffers,
+      allDestinations: this.#allDestinations,
+      mode: this.#mode
+    });
   }
+
 
   reset(tripPoint) {
     this.updateElement(
@@ -163,15 +180,18 @@ export default class EditPointView extends AbstractStatefulView {
     );
   }
 
+
   _restoreHandlers = () => {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditFormButtonHandler);
+    if (this.#mode === Mode.EDITING) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditFormButtonHandler);
+    }
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelectorAll('.event__type-input').forEach((element) => {
       element.addEventListener('change', this.#typeInputClick);
     });
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputChange);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);
-
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteEditFormButtonHandler);
     const offerBlock = this.element.querySelector('.event__available-offers');
 
     if(offerBlock){
@@ -244,6 +264,11 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
+  #deleteEditFormButtonHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteEditFormButton(EditPointView.parseStateToPoint(this._state));
+  };
+
   #closeEditFormButtonHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseEditFormButton();
@@ -273,7 +298,6 @@ export default class EditPointView extends AbstractStatefulView {
         .find((offer) => offer.type === this._state.type).offers
         .filter((offer) => newCheckedOffersForPoint.includes(offer.id.toString()))
     });
-    //console.log(this._state);
   };
 
   #priceInputChange = (evt) => {
@@ -308,15 +332,13 @@ export default class EditPointView extends AbstractStatefulView {
     }
   };
 
-  static parsePointToState = (tripPoint) => {
-    const formattedDateFrom = typeof tripPoint.dateFrom === 'string' ? '' : formatDate(tripPoint.dateFrom, FormatsDate.DMYHM);
-    const formattedDateTo = typeof tripPoint.dateTo === 'string' ? '' : formatDate(tripPoint.dateTo, FormatsDate.DMYHM);
-    return {
-      ...tripPoint,
-      dateFrom: formattedDateFrom,
-      dateTo: formattedDateTo
-    };
-  };
 
-  static parseStateToPoint = (state) => state.tripPoint;
+  static parsePointToState = (tripPoint) => ({
+    ...tripPoint,
+  });
+
+  static parseStateToPoint = (state) => {
+    const tripPoint = {...state};
+    return tripPoint;
+  };
 }

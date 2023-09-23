@@ -9,6 +9,25 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
 dayjs.extend(utc);
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  CREATING: 'CREATING',
+};
+
+const UserAction = {
+  UPDATE_EVENT: 'UPDATE_EVENT',
+  ADD_EVENT: 'ADD_EVENT',
+  DELETE_EVENT: 'DELETE_EVENT'
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
+
+
 const SortType = {
   DAY: 'day',
   EVENT: 'event',
@@ -30,7 +49,7 @@ const FilterType = {
   PAST: 'past'
 };
 
-const Filters = {
+const filter = {
   [FilterType.EVERYTHING]: (points) => points,
   [FilterType.FUTURE]: (points) => points.filter((point) => dayjs(point.dateFrom).isAfter(dayjs())),
   [FilterType.PRESENT]: (points) => points.filter((point) => dayjs(point.dateFrom)
@@ -63,10 +82,10 @@ const getRandomArrayElement = (arr) => arr[getRandomInteger(0, arr.length - 1)];
 
 const generateID = () => Math.random().toString(36).substring(2, 10);
 
-const formatDate = (date, neededFormat) => dayjs.utc(date).format(neededFormat);
+const formatDate = (date, neededFormat) => dayjs(date).format(neededFormat);
 
 function formatDuration(startDate, endDate) {
-  const diff = endDate.diff(startDate);
+  const diff = dayjs(endDate).diff(dayjs(startDate));
   const durationObj = dayjs.duration(diff);
 
   const days = durationObj.days() > 0 ? `${durationObj.format('DD')}D ` : '';
@@ -76,10 +95,14 @@ function formatDuration(startDate, endDate) {
   return `${days}${hours}${minutes}`.trim();
 }
 
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
+function isSameDates(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 }
 
-export {getRandomInteger, getRandomArrayElement, generateID, formatDate,
-  formatDuration, updateItem, getPointsByDate, getPointsByDuration, getEPointsByPrice,
-  SortType, FormatsDate, Filters};
+function isSamePrices(priceA, priceB) {
+  return (priceA === null && priceB === null) || (priceA === priceB);
+}
+
+export {getRandomInteger, getRandomArrayElement, generateID, formatDate, isSameDates, isSamePrices,
+  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice, Mode,
+  SortType, FormatsDate, filter, UserAction, UpdateType, FilterType};

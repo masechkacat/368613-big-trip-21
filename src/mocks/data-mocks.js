@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { getRandomArrayElement, generateID, getRandomInteger } from '../utils/utiles';
 import { POINT_TYPES, OFFER_TITLES, CITY_DESCRIPTIONS } from './const.js';
 
@@ -37,8 +36,8 @@ const generatePoint = () => {
   return {
     id: generateID(),
     basePrice: getRandomInteger(500, 2000),
-    dateFrom: dayjs().add(getRandomInteger(5, 15), 'day'),
-    dateTo: dayjs().add(getRandomInteger(16, 30), 'day'),
+    dateFrom: '2023-11-23T18:28:01.397Z',
+    dateTo: '2023-11-24T23:28:01.397Z',
     destination: getRandomArrayElement(destinationsMock).id,
     isFavorite: Boolean(getRandomInteger(0, 1)),
     offers: OFFERS[type].map((offer) => offer.id).slice(0,getRandomInteger(0,3)),
@@ -51,4 +50,3 @@ const offersMock = POINT_TYPES.map((type) => ({ type, offers: OFFERS[type] }));
 
 export {pointsMock, destinationsMock, offersMock};
 
-//export { generatePoint, generateDestination, OFFERS};
