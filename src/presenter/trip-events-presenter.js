@@ -116,14 +116,14 @@ export default class TripEventsPresenter {
   };
 
   #handleNewPointDestroy = () => {
+    this.#formStateModel.formState = Mode.DEFAULT;
 
 
-    if(!this.points.length){
-      remove(this.#tripSortComponent && this.#formStateModel.formState !== Mode.CREATING);
+    if(!this.points.length && this.#formStateModel.formState !== Mode.CREATING){
+      remove(this.#tripSortComponent);
       this.#tripSortComponent = null;
       this.#renderNoPoints();
     }
-    this.#formStateModel.formState = Mode.DEFAULT;
 
   };
 
@@ -193,8 +193,7 @@ export default class TripEventsPresenter {
   }
 
   #renderTripEvents() {
-
-    if (!this.points.length) {
+    if (!this.points.length && this.#formStateModel.formState !== Mode.CREATING) {
       this.#renderNoPoints();
       return;
     }
