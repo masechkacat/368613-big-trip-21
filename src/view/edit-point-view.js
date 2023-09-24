@@ -21,13 +21,13 @@ const DEFAULT_POINT = {
 function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 
   const {basePrice, checkedOffersForPoint, type, destinationForPoint, dateFrom, dateTo} = state;
-
+  console.log(allOffers);
   const formattedDateFrom = (dateFrom === '') ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
   const formattedDateTo = (dateTo === '') ? '' : formatDate(dateTo, FormatsDate.DMYHM);
 
   const currentType = (state === DEFAULT_POINT) ? DEFAULT_POINT.type : state.type;
-  const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? DEFAULT_POINT.offers;
-  const hasOffersForType = currentTypeOffers.length > 0;
+  const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? [];
+  const hasOffersForType = currentTypeOffers.length !== 0;
   const hideOffersSection = !hasOffersForType;
   const hideDesinationSection = !state.destinationForPoint.id;
   const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
@@ -162,6 +162,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleCloseEditFormButton = onCloseEditFormButton;
     this.#handleDeleteEditFormButton = onDeleteEditFormButton;
     this._restoreHandlers();
+    console.log('from constructor', this.#allOffers);
   }
 
   get template() {

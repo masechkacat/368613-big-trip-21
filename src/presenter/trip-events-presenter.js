@@ -45,6 +45,7 @@ export default class TripEventsPresenter {
       onDataChange: this.#handleViewAction,
       onDestroy: this.#handleNewPointDestroy,
     });
+    console.log(this.#pointsModel.offers);
 
     this.#formStateModel.addObserver(this.#handleFormStateChanged);
     this.#pointsModel.addObserver(this.#handleModelEvent);

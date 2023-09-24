@@ -34,6 +34,9 @@ const headerMainPresenter = new HeaderMainPresenter({
   formStateModel
 });
 
-headerMainPresenter.init();
+
+pointsModel.init();
 
 tripEventsPresenter.init();
+
+headerMainPresenter.init();

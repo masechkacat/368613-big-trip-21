@@ -33,6 +33,7 @@ export default class NewPointPresenter {
       onDeleteEditFormButton: this.#handleDeleteEditFormButton,
       mode: Mode.CREATING
     });
+    console.log('from new presenter', this.#allOffers);
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
 

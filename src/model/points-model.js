@@ -40,6 +40,7 @@ export default class PointsModel extends Observable {
       this.#points = points.map(this.#adaptToClient);
       this.#destinations = destinations;
       this.#offers = offers;
+      //this.getenrichedPoints();
     } catch (err) {
       this.#points = [];
       this.#destinations = [];
@@ -50,13 +51,13 @@ export default class PointsModel extends Observable {
   }
 
   get enrichedPoints() {
-    if (!this.#enrichedPoints) {
-      this.#enrichedPoints = this.#points.map((point) => ({
-        ...point,
-        checkedOffersForPoint: this.getCheckedOffersForPoint(point),
-        destinationForPoint: this.getDestinationForPoint(point)
-      }));
-    }
+    //if (!this.#enrichedPoints) {
+    this.#enrichedPoints = this.#points.map((point) => ({
+      ...point,
+      checkedOffersForPoint: this.getCheckedOffersForPoint(point),
+      destinationForPoint: this.getDestinationForPoint(point)
+    }));
+    //}
     return this.#enrichedPoints;
   }
 
