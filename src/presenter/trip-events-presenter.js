@@ -45,7 +45,7 @@ export default class TripEventsPresenter {
       onDataChange: this.#handleViewAction,
       onDestroy: this.#handleNewPointDestroy,
     });
-    console.log(this.#pointsModel.offers);
+    console.log(this.#pointsModel);
 
     this.#formStateModel.addObserver(this.#handleFormStateChanged);
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -99,6 +99,7 @@ export default class TripEventsPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
+    console.log('updateType', updateType);
     switch (updateType) {
       case UpdateType.INIT:
         this.#isLoading = false;

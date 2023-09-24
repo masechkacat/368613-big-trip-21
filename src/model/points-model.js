@@ -29,6 +29,17 @@ export default class PointsModel extends Observable {
     return this.#destinations;
   }
 
+  get enrichedPoints() {
+    //if (!this.#enrichedPoints) {
+    this.#enrichedPoints = this.#points.map((point) => ({
+      ...point,
+      checkedOffersForPoint: this.getCheckedOffersForPoint(point),
+      destinationForPoint: this.getDestinationForPoint(point)
+    }));
+    //}
+    return this.#enrichedPoints;
+  }
+
   async init() {
     try {
       const [points, destinations, offers] = await Promise.all([
@@ -40,6 +51,7 @@ export default class PointsModel extends Observable {
       this.#points = points.map(this.#adaptToClient);
       this.#destinations = destinations;
       this.#offers = offers;
+      this.#enrichedPoints = this.enrichedPoints;
       //this.getenrichedPoints();
     } catch (err) {
       this.#points = [];
@@ -50,7 +62,7 @@ export default class PointsModel extends Observable {
     this._notify(UpdateType.INIT);
   }
 
-  get enrichedPoints() {
+  /*get enrichedPoints() {
     //if (!this.#enrichedPoints) {
     this.#enrichedPoints = this.#points.map((point) => ({
       ...point,
@@ -59,7 +71,7 @@ export default class PointsModel extends Observable {
     }));
     //}
     return this.#enrichedPoints;
-  }
+  }*/
 
   getCheckedOffersForPoint(point) {
     const pointTypeOffers = this.#offers.find((offer) => offer.type === point.type);
