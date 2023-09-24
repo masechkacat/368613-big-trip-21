@@ -1,13 +1,20 @@
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
+import LoadingView from '../view/loading-view.js';
 import NoPointView from '../view/no-point-view.js';
 import { render, remove, replace, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { sort } from '../utils/sort.js';
-import { SortType, UpdateType, UserAction, filter, FilterType, Mode } from '../utils/utiles.js';
+import { SortType, UpdateType, UserAction, filter, FilterType, Mode, UiTimeLimit } from '../utils/utiles.js';
 
 export default class TripEventsPresenter {
+  #uiBlocker = new UiBlocker({
+    lowerLimit: UiTimeLimit.LOWER_LIMIT,
+    upperLimit: UiTimeLimit.UPPER_LIMIT
+  });
+
   #tripEventsContainer = null;
   #pointsModel = null;
   #filterModel = null;
@@ -15,12 +22,15 @@ export default class TripEventsPresenter {
 
   #tripSortComponent = null;
   #tripListComponent = new ListView();
+  #loadingComponent = new LoadingView();
   #noPointComponent = null;
 
   #newPointPresenter = null;
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+
+  #isLoading = true;
 
   constructor ({tripEventsContainer, pointsModel, filterModel, formStateModel}) {
     this.#tripEventsContainer = tripEventsContainer;
@@ -55,22 +65,45 @@ export default class TripEventsPresenter {
     this.#renderTripEvents();
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async(actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
-      case UserAction.UPDATE_EVENT:
-        this.#pointsModel.updatePoint(updateType, update);
+      case UserAction.ADD_POINT:
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
-      case UserAction.ADD_EVENT:
-        this.#pointsModel.addPoint(updateType, update);
+      case UserAction.UPDATE_POINT:
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
-      case UserAction.DELETE_EVENT:
-        this.#pointsModel.deletePoint(updateType,update);
+      case UserAction.DELETE_POINT:
+        this.#pointPresenters.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.get(update.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderTripEvents();
+        break;
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);
         break;
@@ -138,6 +171,7 @@ export default class TripEventsPresenter {
     this.#clearPointList();
 
     remove(this.#tripSortComponent);
+    remove(this.#loadingComponent);
 
     if(this.#noPointComponent){
       remove(this.#noPointComponent);
@@ -182,6 +216,10 @@ export default class TripEventsPresenter {
     render(this.#noPointComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
+  }
+
   #renderPoints(points) {
     points.forEach((point) => {
       this.#renderPoint(point);
@@ -193,6 +231,11 @@ export default class TripEventsPresenter {
   }
 
   #renderTripEvents() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (!this.points.length && this.#formStateModel.formState !== Mode.CREATING) {
       this.#renderNoPoints();
       return;

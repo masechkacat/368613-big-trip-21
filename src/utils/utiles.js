@@ -9,6 +9,11 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
 dayjs.extend(utc);
 
+const UiTimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
@@ -21,7 +26,21 @@ const UserAction = {
   DELETE_EVENT: 'DELETE_EVENT'
 };
 
+const ApiServiceConnector = {
+  AUTHORIZATION: 'Basic rsfjl2uxok',
+  END_POINT: 'https://21.objects.pages.academy/big-trip'
+};
+
+const ApiServiceMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
+};
+
+
 const UpdateType = {
+  INIT: 'INIT',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR'
@@ -104,5 +123,5 @@ function isSamePrices(priceA, priceB) {
 }
 
 export {getRandomInteger, getRandomArrayElement, generateID, formatDate, isSameDates, isSamePrices,
-  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice, Mode,
-  SortType, FormatsDate, filter, UserAction, UpdateType, FilterType};
+  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice, Mode, UiTimeLimit,
+  SortType, FormatsDate, filter, UserAction, UpdateType, FilterType, ApiServiceConnector, ApiServiceMethod};
