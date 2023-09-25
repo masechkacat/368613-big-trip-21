@@ -37,15 +37,7 @@ export default class TripEventsPresenter {
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
     this.#formStateModel = formStateModel;
-
-    this.#newPointPresenter = new NewPointPresenter({
-      pointListContainer: this.#tripListComponent.element,
-      allOffers: this.#pointsModel.offers,
-      allDestinations: this.#pointsModel.destinations,
-      onDataChange: this.#handleViewAction,
-      onDestroy: this.#handleNewPointDestroy,
-    });
-    console.log(this.#pointsModel);
+    this.#newPointPresenter = null;
 
     this.#formStateModel.addObserver(this.#handleFormStateChanged);
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -69,7 +61,7 @@ export default class TripEventsPresenter {
   #handleViewAction = async(actionType, updateType, update) => {
     this.#uiBlocker.block();
     switch (actionType) {
-      case UserAction.ADD_POINT:
+      case UserAction.ADD_EVENT:
         this.#newPointPresenter.setSaving();
         try {
           await this.#pointsModel.addPoint(updateType, update);
@@ -77,7 +69,7 @@ export default class TripEventsPresenter {
           this.#newPointPresenter.setAborting();
         }
         break;
-      case UserAction.UPDATE_POINT:
+      case UserAction.UPDATE_EVENT:
         this.#pointPresenters.get(update.id).setSaving();
         try {
           await this.#pointsModel.updatePoint(updateType, update);
@@ -85,7 +77,7 @@ export default class TripEventsPresenter {
           this.#pointPresenters.get(update.id).setAborting();
         }
         break;
-      case UserAction.DELETE_POINT:
+      case UserAction.DELETE_EVENT:
         this.#pointPresenters.get(update.id).setDeleting();
         try {
           await this.#pointsModel.deletePoint(updateType, update);
@@ -99,7 +91,6 @@ export default class TripEventsPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log('updateType', updateType);
     switch (updateType) {
       case UpdateType.INIT:
         this.#isLoading = false;
@@ -121,7 +112,7 @@ export default class TripEventsPresenter {
   };
 
   #handleModeChange = () => {
-    this.#newPointPresenter.destroy();
+    this.#newPointPresenter?.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -134,6 +125,14 @@ export default class TripEventsPresenter {
   #handleNewPointFormOpen() {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    this.#newPointPresenter = new NewPointPresenter({
+      pointListContainer: this.#tripListComponent.element,
+      allOffers: this.#pointsModel.offers,
+      allDestinations: this.#pointsModel.destinations,
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#handleNewPointDestroy,
+    });
 
     this.#newPointPresenter.init();
   }
@@ -164,7 +163,7 @@ export default class TripEventsPresenter {
 
 
   #clearPointList() {
-    this.#newPointPresenter.destroy();
+    this.#newPointPresenter?.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
   }
