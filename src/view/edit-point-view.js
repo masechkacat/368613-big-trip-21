@@ -20,8 +20,8 @@ const DEFAULT_POINT = {
 
 function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 
-  const {basePrice, checkedOffersForPoint, type, destinationForPoint, dateFrom, dateTo} = state;
-  console.log(allOffers);
+  const {basePrice, checkedOffersForPoint, type, destinationForPoint, dateFrom, dateTo, isSaving, isDeleting, isDisabled} = state;
+  console.log(isSaving, isDeleting, isDisabled);
   const formattedDateFrom = (dateFrom === '') ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
   const formattedDateTo = (dateTo === '') ? '' : formatDate(dateTo, FormatsDate.DMYHM);
 
@@ -36,7 +36,8 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
   const getOfferCheckboxes = () => currentTypeOffers.map((offer) => {
     const checked = checkedOffersForPoint.some((checkedOffer) => checkedOffer.id === offer.id) ? 'checked' : '';
     return `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" data-offer-id="${offer.id}"  id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checked}>
+      <input class="event__offer-checkbox  visually-hidden" data-offer-id="${offer.id}"  id="event-offer-${offer.id}" ${isDisabled ? 'disabled' : ''}
+        type="checkbox" name="event-offer-${offer.id}" ${checked}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -79,7 +80,9 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationForPoint.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
+          ${isDisabled ? 'disabled' : ''}
+          value="${destinationForPoint.name}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationNamesTemplate}
           </datalist>
@@ -87,10 +90,12 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattedDateFrom}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
+          ${isDisabled ? 'disabled' : ''} value="${formattedDateFrom}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattedDateTo}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
+          ${isDisabled ? 'disabled' : ''} value="${formattedDateTo}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -98,11 +103,14 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price"
+          ${isDisabled ? 'disabled' : ''} value="${he.encode(basePrice.toString())}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${mode === Mode.CREATING ? 'Cancel' : 'Delete'}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit"${isDisabled || basePrice === 0 ? 'disabled' : ''}>
+        ${isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+        ${isDeleting ? 'Deleting...' : ((mode === Mode.CREATING) ? 'Cancel' : 'Delete')}</button>
           ${mode !== Mode.CREATING ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
           <span class="visually-hidden">Open event</span>
         </button>

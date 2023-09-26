@@ -56,7 +56,7 @@ export default class TripApiService extends ApiService {
     const adaptedPoint = {...point,
       'date_from': point.dateFrom?.toISOString?.() ?? null,
       'date_to': point.dateTo?.toISOString?.() ?? null,
-      'base_price': point.basePrice,
+      'base_price': parseInt(point.basePrice, 10),
       'is_favorite': point.isFavorite,
     };
 
