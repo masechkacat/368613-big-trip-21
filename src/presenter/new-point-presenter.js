@@ -33,7 +33,6 @@ export default class NewPointPresenter {
       onDeleteEditFormButton: this.#handleDeleteEditFormButton,
       mode: Mode.CREATING
     });
-    console.log('from new presenter', this.#allOffers);
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
 
@@ -76,7 +75,7 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,
-      {...point, isFavorite: false}
+      point
     );
   };
 

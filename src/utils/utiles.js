@@ -56,6 +56,7 @@ const SortType = {
 };
 
 const FormatsDate = {
+  DAYMONTH: 'DD MMM',
   MONTHDAY: 'MMM DD',
   HOURMIN: 'HH:mm',
   DMYHM: 'DD/MM/YY HH:mm'
@@ -78,7 +79,7 @@ const filter = {
 
 
 function getPointsByDate(pointA, pointB) {
-  return dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
+  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 
 function getPointsByDuration(pointA, pointB) {
