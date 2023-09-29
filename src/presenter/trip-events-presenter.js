@@ -82,7 +82,7 @@ export default class TripEventsPresenter {
         try {
           await this.#pointsModel.deletePoint(updateType, update);
         } catch (err) {
-          this.#newPointPresenter.get(update.id).setAborting();
+          this.#pointPresenters.get(update.id).setAborting();
         }
         break;
     }
@@ -218,6 +218,9 @@ export default class TripEventsPresenter {
   }
 
   #renderLoading() {
+    this.#loadingComponent = new LoadingView(
+      this.#isLoading
+    );
     render(this.#loadingComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
   }
 
@@ -233,8 +236,7 @@ export default class TripEventsPresenter {
 
   #renderTripEvents() {
     if (this.#isLoading) {
-      this.#renderLoading();
-      return;
+      this.#renderLoading(this.#isLoading);
     }
 
     if (!this.points.length && this.#formStateModel.formState !== Mode.CREATING) {

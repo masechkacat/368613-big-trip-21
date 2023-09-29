@@ -27,7 +27,7 @@ const UserAction = {
 };
 
 const ApiServiceConnector = {
-  AUTHORIZATION: 'Basic rsfjl2uxok',
+  AUTHORIZATION: 'Basic rsfjl2uxok2',
   END_POINT: 'https://21.objects.pages.academy/big-trip'
 };
 

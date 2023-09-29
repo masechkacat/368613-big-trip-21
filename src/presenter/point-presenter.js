@@ -135,17 +135,16 @@ export default class PointPresenter {
     this.#replaceCardToForm();
   };
 
-  #handleFormSubmit = (update) => {
-    const isMinorUpdate = isSameDates(this.#point.dateFrom, update.dateFrom)
+  #handleFormSubmit = (point) => {
+    /*const isMinorUpdate = isSameDates(this.#point.dateFrom, update.dateFrom)
     || isSameDates(this.#point.dateTo, update.dateTo)
-    || isSamePrices(this.#point.basePrice, update.basePrice);
+    || isSamePrices(this.#point.basePrice, update.basePrice);*/
 
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
-      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      update
+      /*isMinorUpdate ? UpdateType.MINOR :*/UpdateType.MINOR,
+      point
     );
-    this.#replaceFormToCard();
   };
 
   #handleDeleteEditFormButton = (point) => {
