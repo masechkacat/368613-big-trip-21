@@ -8,21 +8,26 @@ const NoPointsTextType = {
   [FilterType.PRESENT]:'There are no present events now'
 };
 
-function createNoPointTemplate(filterType) {
-  return (
-    `<p class="trip-events__msg">${NoPointsTextType[filterType]}</p>`
-  );
+function createNoPointTemplate(filterType, isError) {
+  if (isError) {
+    return ('<p class="trip-events__msg">Failed to load latest route information</p>');
+  } else {
+    return (
+      `<p class="trip-events__msg">${NoPointsTextType[filterType]}</p>`
+    );
+  }
 }
-
 export default class NoPointView extends AbstractView {
   #filterType = null;
+  #isError = false;
 
-  constructor({filterType}) {
+  constructor({filterType,isError}) {
     super();
     this.#filterType = filterType;
+    this.#isError = isError;
   }
 
   get template() {
-    return createNoPointTemplate(this.#filterType);
+    return createNoPointTemplate(this.#filterType, this.#isError);
   }
 }

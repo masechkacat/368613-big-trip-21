@@ -40,13 +40,16 @@ export default class PointsModel extends Observable {
       this.#points = points.map(this.#adaptToClient);
       this.#destinations = destinations;
       this.#offers = offers;
+      this._notify(UpdateType.INIT);
+
     } catch (err) {
       this.#points = [];
       this.#destinations = [];
       this.#offers = [];
+      this._notify(UpdateType.ERROR);
+
     }
 
-    this._notify(UpdateType.INIT);
   }
 
   get enrichedPoints() {

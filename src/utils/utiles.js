@@ -43,7 +43,8 @@ const UpdateType = {
   INIT: 'INIT',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  ERROR: 'ERROR'
 };
 
 

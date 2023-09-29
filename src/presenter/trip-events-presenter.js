@@ -31,6 +31,7 @@ export default class TripEventsPresenter {
   #filterType = FilterType.EVERYTHING;
 
   #isLoading = true;
+  #isError = false;
 
   constructor ({tripEventsContainer, pointsModel, filterModel, formStateModel}) {
     this.#tripEventsContainer = tripEventsContainer;
@@ -94,6 +95,12 @@ export default class TripEventsPresenter {
     switch (updateType) {
       case UpdateType.INIT:
         this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderTripEvents();
+        break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        this.#isError = true;
         remove(this.#loadingComponent);
         this.#renderTripEvents();
         break;
@@ -212,15 +219,12 @@ export default class TripEventsPresenter {
 
   #renderNoPoints() {
     this.#noPointComponent = new NoPointView({
-      filterType: this.#filterType
+      filterType: this.#filterType, isError: this.#isError
     });
     render(this.#noPointComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderLoading() {
-    this.#loadingComponent = new LoadingView(
-      this.#isLoading
-    );
     render(this.#loadingComponent, this.#tripEventsContainer, RenderPosition.AFTERBEGIN);
   }
 
@@ -235,8 +239,9 @@ export default class TripEventsPresenter {
   }
 
   #renderTripEvents() {
-    if (this.#isLoading) {
-      this.#renderLoading(this.#isLoading);
+    if (this.#isLoading && !this.#isError) {
+      this.#renderLoading();
+      return;
     }
 
     if (!this.points.length && this.#formStateModel.formState !== Mode.CREATING) {
