@@ -42,9 +42,12 @@ export default class HeaderMainPresenter {
   }
 
   init() {
-    this.#renderTripInfo();
+    //this.#renderTripInfo();
     this.#renderFilters();
     this.#renderNewButton();
+    if (this.#points && this.#points.length > 0) {
+      this.#renderTripInfo();
+    }
   }
 
   #renderNewButton() {
@@ -67,6 +70,7 @@ export default class HeaderMainPresenter {
 
   #renderTripInfo () {
     const prevTripInfoComponent = this.#tripInfoComponent;
+
     this.#points = sort[SortType.DAY](this.#pointsModel.enrichedPoints);
 
     this.#tripInfoComponent = new TripInfoView({

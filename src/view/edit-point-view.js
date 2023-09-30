@@ -32,7 +32,6 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
   const hasOffersForType = currentTypeOffers.length !== 0;
   const hideOffersSection = !hasOffersForType;
   const hideDesinationSection = !(destinationForPoint in allDestinations) && !destinationForPoint.description;
-  const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
 
 
   const getOfferCheckboxes = () => currentTypeOffers.map((offer) => {
@@ -48,7 +47,7 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
     </div>`;
   }).join('');
 
-  const imagesDestination =  destinationForPoint.pictures.map((pictures) => `
+  const imagesDestination = destinationForPoint.pictures.map((pictures) => `
     <img class="event__photo" src="${pictures.src}" alt="Event photo">`);
 
   const eventTypesTemplate = allOffers.map((offer) => `<div class="event__type-item">
@@ -67,7 +66,7 @@ console.log(isDisabled);
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle ${isDisabled ? 'disabled' : ''} visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle" ${isDisabled ? 'disabled' : ''} visually-hidden" id="event-type-toggle-1" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -193,6 +192,7 @@ export default class EditPointView extends AbstractStatefulView {
     if (this.#mode === Mode.EDITING) {
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditFormButtonHandler);
     }
+
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelectorAll('.event__type-input').forEach((element) => {
       element.addEventListener('change', this.#typeInputClick);
@@ -314,6 +314,7 @@ export default class EditPointView extends AbstractStatefulView {
     this._setState({
       basePrice: evt.target.value
     });
+    this.element.querySelector('.event__save-btn').disabled = false;
   };
 
   #destinationInputChange = (evt) => {
