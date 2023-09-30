@@ -8,6 +8,7 @@ const DEFAULT_POINT = {
   basePrice: 0,
   dateFrom: '',
   dateTo: '',
+  destination: '',
   destinationForPoint: {
     description: '',
     name: '',
@@ -15,13 +16,14 @@ const DEFAULT_POINT = {
   },
   isFavorite: false,
   checkedOffersForPoint: [],
-  type: 'flight'
+  type: 'flight',
+  offers:[]
 };
 
 function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 
   const {basePrice, checkedOffersForPoint, type, destinationForPoint, dateFrom, dateTo, isSaving, isDeleting, isDisabled, isDisabledSubmit} = state;
-  console.log(isSaving, isDeleting, isDisabled, mode, destinationForPoint);
+  console.log('issaving',isSaving,'isDeliting', isDeleting, 'disabled', isDisabled,'mode', mode);
   const formattedDateFrom = (dateFrom === '') ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
   const formattedDateTo = (dateTo === '') ? '' : formatDate(dateTo, FormatsDate.DMYHM);
 
@@ -29,7 +31,7 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
   const currentTypeOffers = allOffers.find((offerOfType) => offerOfType.type === currentType)?.offers ?? [];
   const hasOffersForType = currentTypeOffers.length !== 0;
   const hideOffersSection = !hasOffersForType;
-  const hideDesinationSection = destinationForPoint.pictures.length < 1;
+  const hideDesinationSection = !(destinationForPoint in allDestinations) && !destinationForPoint.description;
   const hideEventDetailsSection = hideOffersSection && hideDesinationSection;
 
 
@@ -46,9 +48,8 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
     </div>`;
   }).join('');
 
-  const imagesDestination = destinationForPoint.id
-    ? destinationForPoint.pictures.map((pictures) => `<img class="event__photo" src="${pictures.src}" alt="Event photo">`).join('')
-    : '';
+  const imagesDestination =  destinationForPoint.pictures.map((pictures) => `
+    <img class="event__photo" src="${pictures.src}" alt="Event photo">`);
 
   const eventTypesTemplate = allOffers.map((offer) => `<div class="event__type-item">
   <input id="event-type-${offer.type}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${offer.type}">
@@ -56,10 +57,10 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 </div>`).join('');
 
   const destinationNamesTemplate = allDestinations.map((avialableDestination) => `<option value="${avialableDestination.name}"></option>`).join('');
-
+console.log(isDisabled);
   return (
     `<li class="trip-events__item">
-    <form class="event event--edit ${isDisabled ? 'disabled' : ''}" action="#" method="post">
+    <form class="event event--edit action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -115,7 +116,6 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
-      ${hideEventDetailsSection ? '' : `
       <section class="event__details">
       ${hideOffersSection ? '' : `
         <section class="event__section  event__section--offers">
@@ -126,21 +126,21 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 
         </section>
         `}
+        ${hideDesinationSection ? '' : `
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">${destinationForPoint.name}</h3>
           <p class="event__destination-description">${destinationForPoint.description}</p>
-          ${hideDesinationSection ? '' : `
 
+          ${(destinationForPoint.pictures.length) ? `
           <div class="event__photos-container">
             <div class="event__photos-tape">
             ${imagesDestination}
             </div>
-          </div>
+          </div>` : ''}
 
         </section>
         `}
       </section>
-      `}
     </form>
   </li>`
   );
@@ -170,7 +170,6 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handleCloseEditFormButton = onCloseEditFormButton;
     this.#handleDeleteEditFormButton = onDeleteEditFormButton;
     this._restoreHandlers();
-    console.log('from constructor', this.#allOffers);
   }
 
   get template() {

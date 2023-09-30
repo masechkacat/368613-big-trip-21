@@ -76,6 +76,7 @@ export default class PointsModel extends Observable {
       const response = await this.#tripApiService.addPoint(update);
       const newPoint = this.#adaptToClient(response);
       this.#points = [newPoint, ...this.#points];
+      console.log('newpoint',newPoint);
       this._notify(updateType, newPoint);
     } catch (err) {
       throw new Error('Can\'t add point');
