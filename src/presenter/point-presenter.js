@@ -1,7 +1,7 @@
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import { replace, render,remove } from '../framework/render.js';
-import { UpdateType, UserAction, Mode, isSameDates, isSamePrices } from '../utils/utiles.js';
+import { UpdateType, UserAction, Mode} from '../utils/utiles.js';
 export default class PointPresenter {
   #pointListContainer = null;
   #point = null;
