@@ -15,8 +15,8 @@ function createTripInfoTemplate(totalSumm, namesDestinations, datesTrip){
     <div class="trip-info__main">
       <h1 class="trip-info__title">${createRouteTemplate(namesDestinations)}</h1>
 
-      <p class="trip-info__dates">${formatDate(datesTrip.tripDateFrom, FormatsDate.MONTHDAY)}
-      &nbsp;&mdash;&nbsp;${formatDate(datesTrip.tripDateTo, FormatsDate.MONTHDAY)}</p>
+      <p class="trip-info__dates">${formatDate(datesTrip.tripDateFrom, FormatsDate.DAYMONTH)}
+      &nbsp;&mdash;&nbsp;${formatDate(datesTrip.tripDateTo, FormatsDate.DAYMONTH)}</p>
     </div>
 
     <p class="trip-info__cost">

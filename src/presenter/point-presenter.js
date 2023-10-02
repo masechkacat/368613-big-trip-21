@@ -54,7 +54,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, prevPointEditComponent);
+      replace(this.#pointComponent, prevPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -71,6 +72,42 @@ export default class PointPresenter {
       this.#replaceFormToCard();
     }
   }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
 
   #replaceCardToForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
@@ -98,17 +135,16 @@ export default class PointPresenter {
     this.#replaceCardToForm();
   };
 
-  #handleFormSubmit = (update) => {
-    const isMinorUpdate = isSameDates(this.#point.dateFrom, update.dateFrom)
+  #handleFormSubmit = (point) => {
+    /*const isMinorUpdate = isSameDates(this.#point.dateFrom, update.dateFrom)
     || isSameDates(this.#point.dateTo, update.dateTo)
-    || isSamePrices(this.#point.basePrice, update.basePrice);
+    || isSamePrices(this.#point.basePrice, update.basePrice);*/
 
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
-      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      update
+      /*isMinorUpdate ? UpdateType.MINOR :*/UpdateType.MINOR,
+      point
     );
-    this.#replaceFormToCard();
   };
 
   #handleDeleteEditFormButton = (point) => {

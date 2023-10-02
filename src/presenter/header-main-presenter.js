@@ -42,9 +42,10 @@ export default class HeaderMainPresenter {
   }
 
   init() {
-    this.#renderTripInfo();
     this.#renderFilters();
     this.#renderNewButton();
+    this.#renderTripInfo();
+
   }
 
   #renderNewButton() {
@@ -67,12 +68,20 @@ export default class HeaderMainPresenter {
 
   #renderTripInfo () {
     const prevTripInfoComponent = this.#tripInfoComponent;
+
     this.#points = sort[SortType.DAY](this.#pointsModel.enrichedPoints);
+
+    if (this.#points.length === 0) {
+      remove(this.#tripInfoComponent);
+      this.#tripInfoComponent = null;
+      return;
+    }
+
 
     this.#tripInfoComponent = new TripInfoView({
       totalSumm: this.getTotalSumm(),
       namesDestinations: this.getNamesDestinations(),
-      datesTrip: this.getDatesTrip()
+      datesTrip: this.getDatesTrip(),
     });
 
     if(prevTripInfoComponent === null){

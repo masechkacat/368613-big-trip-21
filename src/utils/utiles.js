@@ -9,6 +9,11 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
 dayjs.extend(utc);
 
+const UiTimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
@@ -21,10 +26,25 @@ const UserAction = {
   DELETE_EVENT: 'DELETE_EVENT'
 };
 
+const ApiServiceConnector = {
+  AUTHORIZATION: 'Basic rsfjl2uxok12',
+  END_POINT: 'https://21.objects.pages.academy/big-trip'
+};
+
+const ApiServiceMethod = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
+};
+
+
 const UpdateType = {
+  INIT: 'INIT',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  ERROR: 'ERROR'
 };
 
 
@@ -37,6 +57,7 @@ const SortType = {
 };
 
 const FormatsDate = {
+  DAYMONTH: 'DD MMM',
   MONTHDAY: 'MMM DD',
   HOURMIN: 'HH:mm',
   DMYHM: 'DD/MM/YY HH:mm'
@@ -59,7 +80,7 @@ const filter = {
 
 
 function getPointsByDate(pointA, pointB) {
-  return dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
+  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 
 function getPointsByDuration(pointA, pointB) {
@@ -104,5 +125,5 @@ function isSamePrices(priceA, priceB) {
 }
 
 export {getRandomInteger, getRandomArrayElement, generateID, formatDate, isSameDates, isSamePrices,
-  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice, Mode,
-  SortType, FormatsDate, filter, UserAction, UpdateType, FilterType};
+  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice, Mode, UiTimeLimit,
+  SortType, FormatsDate, filter, UserAction, UpdateType, FilterType, ApiServiceConnector, ApiServiceMethod};
