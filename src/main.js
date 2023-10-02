@@ -4,7 +4,7 @@ import FilterModel from './model/filters-model.js';
 import FormStateModel from './model/form-state-model.js.js';
 import HeaderMainPresenter from './presenter/header-main-presenter.js';
 import TripApiService from './trip-api-service.js';
-import { ApiServiceConnector } from './utils/utiles.js';
+import { ApiServiceConnector } from './utils/const.js';
 
 const siteHeaderContainer = document.querySelector('.page-header');
 const siteTripInfo = siteHeaderContainer.querySelector('.trip-main');

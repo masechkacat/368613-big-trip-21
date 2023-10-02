@@ -2,7 +2,8 @@ import FilterView from '../view/filter-view';
 import TripInfoView from '../view/trip-info-view';
 import NewPointButtonView from '../view/new-point-button-view';
 import { render, replace, remove, RenderPosition } from '../framework/render.js';
-import {SortType, FilterType, UpdateType, filter, Mode} from '../utils/utiles.js';
+import {SortType, FilterType, UpdateType, Mode} from '../utils/const.js';
+import { filter } from '../utils/utiles.js';
 import { sort } from '../utils/sort.js';
 
 

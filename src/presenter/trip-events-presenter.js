@@ -7,7 +7,8 @@ import { render, remove, replace, RenderPosition } from '../framework/render.js'
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { sort } from '../utils/sort.js';
-import { SortType, UpdateType, UserAction, filter, FilterType, Mode, UiTimeLimit } from '../utils/utiles.js';
+import { SortType, UpdateType, UserAction, FilterType, Mode, UiTimeLimit } from '../utils/const.js';
+import { filter } from '../utils/utiles.js';
 
 export default class TripEventsPresenter {
   #uiBlocker = new UiBlocker({

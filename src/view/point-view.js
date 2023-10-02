@@ -1,5 +1,5 @@
-import { formatDate, FormatsDate } from '../utils/utiles.js';
-import { formatDuration } from '../utils/utiles.js';
+import { formatDate, formatDuration } from '../utils/utiles.js';
+import { FormatsDate } from '../utils/const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 import he from 'he';
 

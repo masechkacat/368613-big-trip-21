@@ -1,4 +1,5 @@
-import { SortType, getPointsByDate, getPointsByDuration,getEPointsByPrice } from './utiles';
+import { getPointsByDate, getPointsByDuration,getEPointsByPrice } from './utiles.js';
+import { SortType } from './const.js';
 
 if(!Array.prototype.toSorted){
   Array.prototype.toSorted = function (fn){

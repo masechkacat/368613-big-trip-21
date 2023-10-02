@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { formatDate, FormatsDate } from '../utils/utiles.js';
+import { formatDate } from '../utils/utiles.js';
+import { FormatsDate } from '../utils/const.js';
 
 function createRouteTemplate(names){
   if(names.length > 3){

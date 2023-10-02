@@ -1,6 +1,6 @@
 import EditPointView from '../view/edit-point-view.js';
 import { render,remove, RenderPosition } from '../framework/render.js';
-import { UpdateType, UserAction, Mode} from '../utils/utiles.js';
+import { UpdateType, UserAction, Mode} from '../utils/const.js';
 
 export default class NewPointPresenter {
   #pointListContainer = null;

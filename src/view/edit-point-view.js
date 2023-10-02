@@ -1,4 +1,5 @@
-import { formatDate, FormatsDate, Mode } from '../utils/utiles.js';
+import { formatDate } from '../utils/utiles.js';
+import { FormatsDate, Mode } from '../utils/const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import 'flatpickr/dist/flatpickr.min.css';
 import flatpickr from 'flatpickr';

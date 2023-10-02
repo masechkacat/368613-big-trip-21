@@ -1,5 +1,5 @@
 import Observable from '../framework/observable.js';
-import { Mode } from '../utils/utiles.js';
+import { Mode } from '../utils/const.js';
 
 export default class FormStateModel extends Observable {
   #currentState = Mode.DEFAULT;

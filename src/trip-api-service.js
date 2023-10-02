@@ -1,5 +1,5 @@
 import ApiService from './framework/api-service.js';
-import {ApiServiceMethod} from './utils/utiles.js';
+import {ApiServiceMethod} from './utils/const.js';
 
 export default class TripApiService extends ApiService {
   get points() {

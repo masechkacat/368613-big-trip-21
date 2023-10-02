@@ -1,6 +1,5 @@
 import Observable from '../framework/observable.js';
-import { UpdateType } from '../utils/utiles.js';
-//import { pointsMock, destinationsMock, offersMock } from '../mocks/data-mocks.js';
+import { UpdateType } from '../utils/const.js';
 
 
 export default class PointsModel extends Observable {
