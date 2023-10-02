@@ -178,7 +178,6 @@ export default class EditPointView extends AbstractStatefulView {
     });
   }
 
-
   reset(tripPoint) {
     this.updateElement(
       EditPointView.parsePointToState(tripPoint),
@@ -279,7 +278,6 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     this.#handleCloseEditFormButton();
   };
-
 
   #typeInputClick = (evt) => {
     evt.preventDefault();
