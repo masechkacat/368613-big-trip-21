@@ -23,7 +23,6 @@ const DEFAULT_POINT = {
 function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 
   const {basePrice, checkedOffersForPoint, type, destinationForPoint, dateFrom, dateTo, isSaving, isDeleting, isDisabled, isDisabledSubmit} = state;
-  console.log('issaving',isSaving,'isDeliting', isDeleting, 'disabled', isDisabled,'mode', mode);
   const formattedDateFrom = (dateFrom === '') ? '' : formatDate(dateFrom, FormatsDate.DMYHM);
   const formattedDateTo = (dateTo === '') ? '' : formatDate(dateTo, FormatsDate.DMYHM);
 
@@ -56,7 +55,6 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 </div>`).join('');
 
   const destinationNamesTemplate = allDestinations.map((avialableDestination) => `<option value="${avialableDestination.name}"></option>`).join('');
-console.log(isDisabled);
   return (
     `<li class="trip-events__item">
     <form class="event event--edit action="#" method="post">
@@ -66,7 +64,7 @@ console.log(isDisabled);
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle" ${isDisabled ? 'disabled' : ''} visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle visually-hidden" ${isDisabled ? 'disabled' : ''}  id="event-type-toggle-1" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
