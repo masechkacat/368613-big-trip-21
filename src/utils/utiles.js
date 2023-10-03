@@ -73,11 +73,11 @@ const FilterType = {
 const filter = {
   [FilterType.EVERYTHING]: (points) => points,
   [FilterType.FUTURE]: (points) => points.filter((point) => dayjs(point.dateFrom).isAfter(dayjs())),
-  [FilterType.PRESENT]: (points) => points.filter((point) => dayjs(point.dateFrom)
-    .isSameOrBefore(dayjs()) && dayjs(point.dateTo).isSameOrAfter(dayjs())),
+  [FilterType.PRESENT]: (points) => points.filter((point) =>
+    (dayjs(point.dateFrom).isSameOrBefore(dayjs()) && dayjs(point.dateTo).isSameOrAfter(dayjs())) ||
+    (dayjs(point.dateFrom).isSame(dayjs(), 'day') && dayjs(point.dateTo).isSame(dayjs(), 'day'))),
   [FilterType.PAST]: (points) => points.filter((point) => dayjs(point.dateTo).isBefore(dayjs()))
 };
-
 
 function getPointsByDate(pointA, pointB) {
   return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
@@ -92,16 +92,6 @@ function getPointsByDuration(pointA, pointB) {
 function getEPointsByPrice(pointA, pointB) {
   return pointB.basePrice - pointA.basePrice;
 }
-
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-const getRandomArrayElement = (arr) => arr[getRandomInteger(0, arr.length - 1)];
-
-const generateID = () => Math.random().toString(36).substring(2, 10);
 
 const formatDate = (date, neededFormat) => dayjs(date).format(neededFormat);
 
@@ -124,6 +114,5 @@ function isSamePrices(priceA, priceB) {
   return (priceA === null && priceB === null) || (priceA === priceB);
 }
 
-export {getRandomInteger, getRandomArrayElement, generateID, formatDate, isSameDates, isSamePrices,
-  formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice, Mode, UiTimeLimit,
-  SortType, FormatsDate, filter, UserAction, UpdateType, FilterType, ApiServiceConnector, ApiServiceMethod};
+export {formatDate, isSameDates, isSamePrices, formatDuration, getPointsByDate, getPointsByDuration, getEPointsByPrice,
+  Mode, UiTimeLimit, SortType, FormatsDate, filter, UserAction, UpdateType, FilterType, ApiServiceConnector, ApiServiceMethod};
