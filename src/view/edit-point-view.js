@@ -55,6 +55,16 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
 </div>`).join('');
 
   const destinationNamesTemplate = allDestinations.map((avialableDestination) => `<option value="${avialableDestination.name}"></option>`).join('');
+
+  let buttonText;
+  if (isDeleting) {
+    buttonText = 'Deleting...';
+  } else if (mode === Mode.CREATING) {
+    buttonText = 'Cancel';
+  } else {
+    buttonText = 'Delete';
+  }
+
   return (
     `<li class="trip-events__item">
     <form class="event event--edit action="#" method="post">
@@ -108,7 +118,7 @@ function createEditPointTemplate({state, allOffers, allDestinations, mode}) {
         <button class="event__save-btn  btn  btn--blue" type="submit"${isDisabled || isDisabledSubmit || basePrice === 0 ? 'disabled' : ''}>
         ${isSaving ? 'Saving...' : 'Save'}</button>
         <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
-        ${isDeleting ? 'Deleting...' : ((mode === Mode.CREATING) ? 'Cancel' : 'Delete')}</button>
+        ${buttonText}</button>
           ${mode !== Mode.CREATING ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
           <span class="visually-hidden">Open event</span>
         </button>
@@ -194,13 +204,13 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelectorAll('.event__type-input').forEach((element) => {
       element.addEventListener('change', this.#typeInputClick);
     });
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputChange);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputChange);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteEditFormButtonHandler);
     const offerBlock = this.element.querySelector('.event__available-offers');
 
     if(offerBlock){
-      offerBlock.addEventListener('change', this.#offerClickHanlder);
+      offerBlock.addEventListener('change', this.#offerClickHandler);
     }
     this.#setDatepickers();
   };
@@ -290,7 +300,7 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-  #offerClickHanlder = (evt) => {
+  #offerClickHandler = (evt) => {
     evt.preventDefault();
 
     const newCheckedOffersForPoint = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'))
@@ -304,7 +314,7 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-  #priceInputChange = (evt) => {
+  #priceInputHandler = (evt) => {
     evt.preventDefault();
 
     this._setState({
