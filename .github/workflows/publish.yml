@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main # Или ваша основная ветка
+      - master # Или ваша основная ветка
 
 jobs:
   deploy:
