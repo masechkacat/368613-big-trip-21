@@ -27,3 +27,5 @@ jobs:
         with:
           branch: gh-pages # Ветка для деплоя
           folder: build # Папка с результатами сборки
+          token: ${{ secrets.DEPLOY_TOKEN }} # Используйте ваш токен
+
